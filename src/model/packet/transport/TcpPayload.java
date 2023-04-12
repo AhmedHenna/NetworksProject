@@ -3,9 +3,9 @@ package model.packet.transport;
 import java.util.ArrayList;
 
 public class TcpPayload extends TransportPayload {
-    private int sequenceNumber;
-    private int acknowledgmentNumber;
-    private ArrayList<Flag> flags;
+    private final int sequenceNumber;
+    private final int acknowledgmentNumber;
+    private final ArrayList<Flag> flags;
 
     public TcpPayload(int sourcePort, int destinationPort, String payload, int sequenceNumber, int acknowledgmentNumber, ArrayList<Flag> flags) {
         super(sourcePort, destinationPort, payload);

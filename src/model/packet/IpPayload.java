@@ -4,9 +4,9 @@ import model.IpAddress;
 import model.packet.transport.TransportPayload;
 
 public class IpPayload {
-    private IpAddress destinationIp;
-    private IpAddress sourceIp;
-    private TransportPayload transportPayload;
+    private final IpAddress destinationIp;
+    private final IpAddress sourceIp;
+    private final TransportPayload transportPayload;
 
     public IpPayload(IpAddress destinationIp, IpAddress sourceIp, TransportPayload transportPayload) {
         this.destinationIp = destinationIp;

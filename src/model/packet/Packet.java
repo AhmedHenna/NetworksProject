@@ -1,9 +1,9 @@
 package model.packet;
 
 public class Packet {
-    private String destinationMacAddress;
-    private String sourceMacAddress;
-    private IpPayload ipPayload;
+    private final String destinationMacAddress;
+    private final String sourceMacAddress;
+    private final IpPayload ipPayload;
 
     public Packet(String destinationMacAddress, String sourceMacAddress, IpPayload ipPayload) {
         this.destinationMacAddress = destinationMacAddress;
