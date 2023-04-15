@@ -1,18 +1,69 @@
 package model;
 
+import events.Event;
+import events.EventBroker;
 import model.packet.Packet;
 
 import java.util.ArrayList;
 
-//TODO: event.Event system pub/sub for pre setting up of events
-//Who subscribes? Device or separate handler?
+
 public abstract class Device {
-    String macAddress;
-    IpAddress ipAddress;
-    IpAddress subnetMask;
-    IpAddress defaultGateway;
-    ArrayList<Link> linkedDevices = new ArrayList<>();
-    abstract void sendPacket();
-    abstract void processReceivedPacket(Packet packet);
+    private final String macAddress;
+    private final IpAddress ipAddress;
+    private final IpAddress subnetMask;
+    private final IpAddress defaultGateway;
+    private final ArrayList<Link> linkedDevices;
+
+    private ArrayList<TcpConnection> connections = new ArrayList<>();
+
+
+    public Device(String macAddress, IpAddress ipAddress, IpAddress subnetMask, IpAddress defaultGateway, ArrayList<Link> linkedDevices) {
+        this.macAddress = macAddress;
+        this.ipAddress = ipAddress;
+        this.subnetMask = subnetMask;
+        this.defaultGateway = defaultGateway;
+        this.linkedDevices = linkedDevices;
+        EventBroker.subscribe(this);
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public IpAddress getIpAddress() {
+        return ipAddress;
+    }
+
+    public IpAddress getSubnetMask() {
+        return subnetMask;
+    }
+
+    public IpAddress getDefaultGateway() {
+        return defaultGateway;
+    }
+
+    public ArrayList<Link> getLinkedDevices() {
+        return linkedDevices;
+    }
+
+    public ArrayList<TcpConnection> getConnections() {
+        return connections;
+    }
+
+    protected abstract void processSentPacket(Packet packet);
+
+    protected abstract void processReceivedPacket(Packet packet);
+
+    public void handleEvent(Event event) {
+        if (event.getSource() == this) {
+            processSentPacket(event.getPacket());
+        } else if (event.getDestination() == this) {
+            processReceivedPacket(event.getPacket());
+        }
+    }
+
+    protected void sendEvent(Event event) {
+        EventBroker.sendEvent(event);
+    }
 
 }
