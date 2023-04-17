@@ -7,7 +7,7 @@ public class TcpPayload extends TransportPayload {
     private final int acknowledgmentNumber;
     private final ArrayList<Flag> flags;
 
-    public TcpPayload(int sourcePort, int destinationPort, String payload, int sequenceNumber, int acknowledgmentNumber, ArrayList<Flag> flags) {
+    public TcpPayload(int sourcePort, int destinationPort, byte[] payload, int sequenceNumber, int acknowledgmentNumber, ArrayList<Flag> flags) {
         super(sourcePort, destinationPort, payload);
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;

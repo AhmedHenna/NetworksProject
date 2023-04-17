@@ -3,9 +3,9 @@ package model.packet.transport;
 public abstract class TransportPayload {
     protected int sourcePort;
     protected int destinationPort;
-    protected String payload;
+    protected byte[] payload;
 
-    public TransportPayload(int sourcePort, int destinationPort, String payload) {
+    public TransportPayload(int sourcePort, int destinationPort, byte[] payload) {
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
         this.payload = payload;
@@ -19,7 +19,7 @@ public abstract class TransportPayload {
         return destinationPort;
     }
 
-    public String getPayload() {
+    public byte[] getPayload() {
         return payload;
     }
 }

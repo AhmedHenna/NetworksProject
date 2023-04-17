@@ -8,14 +8,14 @@ import model.packet.transport.TcpPayload;
 
 import java.util.ArrayList;
 
-public abstract class TcpHandshakeEvent extends Event {
+public abstract class TcpEvent extends Event {
 
     protected final int sourcePort;
     protected final int destinationPort;
 
-    private final ArrayList<TcpPayload.Flag> flags;
+    protected final ArrayList<TcpPayload.Flag> flags;
 
-    public TcpHandshakeEvent(Device source, Device destination, int sourcePort, int destinationPort) {
+    public TcpEvent(Device source, Device destination, int sourcePort, int destinationPort) {
         super(source, destination);
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;

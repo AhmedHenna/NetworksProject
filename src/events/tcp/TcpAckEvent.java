@@ -6,7 +6,7 @@ import model.packet.transport.TcpPayload;
 import java.util.ArrayList;
 
 
-public class TcpAckEvent extends TcpHandshakeEvent {
+public class TcpAckEvent extends TcpEvent {
 
     public TcpAckEvent(Device source, Device destination, int sourcePort, int destinationPort) {
         super(source, destination, sourcePort, destinationPort);
