@@ -13,6 +13,7 @@ abstract class TcpDataEvent extends TcpEvent {
     private final int acknowledgmentNumber;
 
     private final String checksum;
+
     public TcpDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber, String checksum) {
         super(source, destination, sourcePort, destinationPort);
         this.data = data;

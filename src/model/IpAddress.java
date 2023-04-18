@@ -1,10 +1,10 @@
 package model;
 
 public class IpAddress {
-    private int firstChunk;
-    private int secondChunk;
-    private int thirdChunk;
-    private int fourthChunk;
+    private final int firstChunk;
+    private final int secondChunk;
+    private final int thirdChunk;
+    private final int fourthChunk;
 
     public IpAddress(int firstChunk, int secondChunk, int thirdChunk, int fourthChunk) {
         this.firstChunk = firstChunk;
