@@ -34,7 +34,7 @@ public abstract class TcpEvent extends Event {
 
     @Override
     public Packet createPacket() {
-        TcpPayload tcpPayload = new TcpPayload(sourcePort, destinationPort, null, 0, 0, flags);
+        TcpPayload tcpPayload = new TcpPayload(sourcePort, destinationPort, null, 0, 0, flags, null);
         IpPayload ipPayload = new IpPayload(destination.getIpAddress(), source.getIpAddress(), tcpPayload);
         return new Packet(destination.getMacAddress(), source.getMacAddress(), ipPayload);
     }

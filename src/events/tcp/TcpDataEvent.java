@@ -12,16 +12,18 @@ abstract class TcpDataEvent extends TcpEvent {
     private final int sequenceNumber;
     private final int acknowledgmentNumber;
 
-    public TcpDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber) {
+    private final String checksum;
+    public TcpDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber, String checksum) {
         super(source, destination, sourcePort, destinationPort);
         this.data = data;
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
+        this.checksum = checksum;
     }
 
     @Override
     public Packet createPacket() {
-        TcpPayload tcpPayload = new TcpPayload(sourcePort, destinationPort, null, sequenceNumber, acknowledgmentNumber, flags);
+        TcpPayload tcpPayload = new TcpPayload(sourcePort, destinationPort, null, sequenceNumber, acknowledgmentNumber, flags, checksum);
         IpPayload ipPayload = new IpPayload(destination.getIpAddress(), source.getIpAddress(), tcpPayload);
         return new Packet(destination.getMacAddress(), source.getMacAddress(), ipPayload);
     }
@@ -29,9 +31,5 @@ abstract class TcpDataEvent extends TcpEvent {
     @Override
     protected ArrayList<TcpPayload.Flag> getFlags() {
         return new ArrayList<>();
-    }
-
-    public byte[] getData() {
-        return data;
     }
 }
