@@ -22,14 +22,6 @@ public abstract class TcpEvent extends Event {
         this.flags = getFlags();
     }
 
-    public int getSourcePort() {
-        return sourcePort;
-    }
-
-    public int getDestinationPort() {
-        return destinationPort;
-    }
-
     protected abstract ArrayList<TcpPayload.Flag> getFlags();
 
     @Override
