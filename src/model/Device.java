@@ -14,7 +14,9 @@ public abstract class Device {
     private final IpAddress defaultGateway;
     private final ArrayList<Link> linkedDevices;
     private final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
-    private final ArrayList<TcpConnection> tcpConnectionPendingClose = new ArrayList<>();
+    private final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
+    private final ArrayList<TcpConnection> tcpConnectionsWithFinSent = new ArrayList<>();
+    private final ArrayList<TcpConnection> tcpConnectionWithFinReceived = new ArrayList<>();
 
 
     public Device(String macAddress, IpAddress ipAddress, IpAddress subnetMask, IpAddress defaultGateway, ArrayList<Link> linkedDevices) {
@@ -50,8 +52,16 @@ public abstract class Device {
         return tcpConnections;
     }
 
-    public ArrayList<TcpConnection> getTcpConnectionPendingClose() {
-        return tcpConnectionPendingClose;
+    public ArrayList<TcpConnection> getTcpConnectionsWithSynSent() {
+        return tcpConnectionsWithSynSent;
+    }
+
+    public ArrayList<TcpConnection> getTcpConnectionsWithFinSent() {
+        return tcpConnectionsWithFinSent;
+    }
+
+    public ArrayList<TcpConnection> getTcpConnectionWithFinReceived() {
+        return tcpConnectionWithFinReceived;
     }
 
     protected abstract void processSentPacket(Packet packet);
