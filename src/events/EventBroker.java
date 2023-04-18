@@ -1,6 +1,6 @@
 package events;
 
-import model.Device;
+import model.devices.Device;
 
 import java.util.ArrayList;
 
@@ -16,12 +16,9 @@ public class EventBroker {
     }
 
     public static void sendEvent(Event event) {
-        notify(event);
-    }
-
-    private static void notify(Event event) {
         for (Device device : devices) {
             device.handleEvent(event);
         }
     }
+
 }

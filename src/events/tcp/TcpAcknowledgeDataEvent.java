@@ -1,6 +1,6 @@
 package events.tcp;
 
-import model.Device;
+import model.devices.Device;
 
 public class TcpAcknowledgeDataEvent extends TcpDataEvent {
     public TcpAcknowledgeDataEvent(Device source, Device destination, int sourcePort, int destinationPort, int acknowledgmentNumber, String checksum) {

@@ -1,13 +1,17 @@
-package model;
+package model.devices;
 
 import events.Event;
 import events.EventBroker;
+import model.IpAddress;
+import model.Link;
+import model.TcpConnection;
 import model.packet.Packet;
 
 import java.util.ArrayList;
 
 
 public abstract class Device {
+    private final String name;
     private final String macAddress;
     private final IpAddress ipAddress;
     private final IpAddress subnetMask;
@@ -19,13 +23,18 @@ public abstract class Device {
     private final ArrayList<TcpConnection> tcpConnectionWithFinReceived = new ArrayList<>();
 
 
-    public Device(String macAddress, IpAddress ipAddress, IpAddress subnetMask, IpAddress defaultGateway, ArrayList<Link> linkedDevices) {
+    public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, IpAddress defaultGateway, ArrayList<Link> linkedDevices) {
+        this.name = name;
         this.macAddress = macAddress;
         this.ipAddress = ipAddress;
         this.subnetMask = subnetMask;
         this.defaultGateway = defaultGateway;
         this.linkedDevices = linkedDevices;
         EventBroker.subscribe(this);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getMacAddress() {
@@ -64,15 +73,15 @@ public abstract class Device {
         return tcpConnectionWithFinReceived;
     }
 
-    protected abstract void processSentPacket(Packet packet);
+    protected abstract void processSentEvent(Event event);
 
-    protected abstract void processReceivedPacket(Packet packet);
+    protected abstract void processReceivedEvent(Event event);
 
     public void handleEvent(Event event) {
         if (event.getSource() == this) {
-            processSentPacket(event.getPacket());
+            processSentEvent(event);
         } else if (event.getDestination() == this) {
-            processReceivedPacket(event.getPacket());
+            processReceivedEvent(event);
         }
     }
 

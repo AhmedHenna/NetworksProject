@@ -1,5 +1,7 @@
 package model;
 
+import model.devices.Device;
+
 public class Link {
     private final Device linkedDevice;
     private final int roundTripTime;

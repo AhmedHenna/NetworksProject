@@ -1,7 +1,7 @@
 package events.tcp;
 
 import events.Event;
-import model.Device;
+import model.devices.Device;
 import model.packet.IpPayload;
 import model.packet.Packet;
 import model.packet.transport.TcpPayload;
