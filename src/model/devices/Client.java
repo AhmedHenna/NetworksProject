@@ -26,31 +26,31 @@ public class Client extends Device {
     @Override
     protected void processSentEvent(Event event) {
         if (event instanceof ArpRequestEvent) {
-            handleSentArpRequestEvent((ArpRequestEvent) event);
+            processSentArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof TcpSynEvent || event instanceof TcpSynAckEvent) {
-            handleSentTcpSynEvent(event);
+            processSentTcpSynEvent(event);
         } else if (event instanceof TcpAckEvent) {
-            handleSentAckEvent((TcpAckEvent) event);
+            processSentAckEvent((TcpAckEvent) event);
         } else if (event instanceof TcpFinEvent) {
-            handleSentTcpFinEvent((TcpFinEvent) event);
+            processSentTcpFinEvent((TcpFinEvent) event);
         } else if (event instanceof TcpFinAckEvent) {
-            handleSentTcpFinAckEvent((TcpFinAckEvent) event);
+            processSentTcpFinAckEvent((TcpFinAckEvent) event);
         }
     }
 
-    private void handleSentArpRequestEvent(ArpRequestEvent event) {
+    private void processSentArpRequestEvent(ArpRequestEvent event) {
         Packet packet = event.getPacket();
         IpPayload ipPayload = packet.getIpPayload();
         pendingArpRequests.add(ipPayload.getDestinationIp());
     }
 
-    private void handleSentTcpSynEvent(Event event) {
+    private void processSentTcpSynEvent(Event event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         tcpConnectionsWithSynSent.add(new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort()));
     }
 
-    private void handleSentAckEvent(TcpAckEvent event) {
+    private void processSentAckEvent(TcpAckEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -62,7 +62,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleSentTcpFinEvent(TcpFinEvent event) {
+    private void processSentTcpFinEvent(TcpFinEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -73,7 +73,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleSentTcpFinAckEvent(TcpFinAckEvent event) {
+    private void processSentTcpFinAckEvent(TcpFinAckEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -90,23 +90,23 @@ public class Client extends Device {
     @Override
     protected void processReceivedEvent(Event event) {
         if (event instanceof ArpRequestEvent) {
-            handleReceivedArpRequestEvent((ArpRequestEvent) event);
+            processReceivedArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof ArpResponseEvent) {
-            handleReceivedArpResponseEvent((ArpResponseEvent) event);
+            processReceivedArpResponseEvent((ArpResponseEvent) event);
         } else if (event instanceof TcpSynEvent) {
-            handleReceivedTcpSynEvent((TcpSynEvent) event);
+            processReceivedTcpSynEvent((TcpSynEvent) event);
         } else if (event instanceof TcpSynAckEvent) {
-            handleReceivedTcpSynAckEvent((TcpSynAckEvent) event);
+            processReceivedTcpSynAckEvent((TcpSynAckEvent) event);
         } else if (event instanceof TcpAckEvent) {
-            handleReceivedTcpAckEvent((TcpAckEvent) event);
+            processReceivedTcpAckEvent((TcpAckEvent) event);
         } else if (event instanceof TcpFinEvent) {
-            handleReceivedTcpFinEvent((TcpFinEvent) event);
+            processReceivedTcpFinEvent((TcpFinEvent) event);
         } else if (event instanceof TcpFinAckEvent) {
-            handleReceivedTcpFinAckEvent((TcpFinAckEvent) event);
+            processReceivedTcpFinAckEvent((TcpFinAckEvent) event);
         }
     }
 
-    private void handleReceivedArpRequestEvent(ArpRequestEvent event) {
+    private void processReceivedArpRequestEvent(ArpRequestEvent event) {
         Packet packet = event.getPacket();
         IpPayload ipPayload = packet.getIpPayload();
         if (ipPayload.getDestinationIp().equals(getIpAddress())) {
@@ -115,7 +115,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleReceivedArpResponseEvent(ArpResponseEvent event) {
+    private void processReceivedArpResponseEvent(ArpResponseEvent event) {
         Packet packet = event.getPacket();
         IpPayload ipPayload = packet.getIpPayload();
 
@@ -125,14 +125,14 @@ public class Client extends Device {
         }
     }
 
-    private void handleReceivedTcpSynEvent(TcpSynEvent event) {
+    private void processReceivedTcpSynEvent(TcpSynEvent event) {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
         TcpSynAckEvent tcpSynAckEvent = new TcpSynAckEvent(this, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
         sendEvent(tcpSynAckEvent);
     }
 
-    private void handleReceivedTcpSynAckEvent(TcpSynAckEvent event) {
+    private void processReceivedTcpSynAckEvent(TcpSynAckEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -144,7 +144,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleReceivedTcpAckEvent(TcpAckEvent event) {
+    private void processReceivedTcpAckEvent(TcpAckEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -156,7 +156,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleReceivedTcpFinEvent(TcpFinEvent event) {
+    private void processReceivedTcpFinEvent(TcpFinEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -174,7 +174,7 @@ public class Client extends Device {
         }
     }
 
-    private void handleReceivedTcpFinAckEvent(TcpFinAckEvent event) {
+    private void processReceivedTcpFinAckEvent(TcpFinAckEvent event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 
@@ -218,7 +218,7 @@ public class Client extends Device {
     }
 
     private void deleteFromConnections(ArrayList<TcpConnection> connections, TcpConnection connection) {
-        tcpConnectionsWithSynSent.removeIf(c -> c.getDestinationIp().equals(connection.getDestinationIp())
+        connections.removeIf(c -> c.getDestinationIp().equals(connection.getDestinationIp())
                 && c.getDestinationPort() == connection.getDestinationPort()
                 && c.getSourcePort() == connection.getSourcePort()
         );
