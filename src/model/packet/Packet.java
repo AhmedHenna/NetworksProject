@@ -1,5 +1,7 @@
 package model.packet;
 
+import model.packet.transport.TransportPayload;
+
 public class Packet {
     private final String destinationMacAddress;
     private final String sourceMacAddress;
@@ -22,4 +24,9 @@ public class Packet {
     public IpPayload getIpPayload() {
         return ipPayload;
     }
+
+    public TransportPayload getTransportPayload() {
+        return ipPayload.getTransportPayload();
+    }
+
 }

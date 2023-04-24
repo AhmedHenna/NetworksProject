@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class IpAddress {
     private final int firstChunk;
     private final int secondChunk;
@@ -32,5 +34,10 @@ public class IpAddress {
     @Override
     public String toString() {
         return firstChunk + "." + secondChunk + "." + thirdChunk + "." + fourthChunk;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this.toString(), obj.toString());
     }
 }

@@ -15,10 +15,11 @@ public abstract class Device {
     private final IpAddress subnetMask;
     private final Device defaultGateway;
     private final ArrayList<Link> linkedDevices;
-    private final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
-    private final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
-    private final ArrayList<TcpConnection> tcpConnectionsWithFinSent = new ArrayList<>();
-    private final ArrayList<TcpConnection> tcpConnectionWithFinReceived = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnectionsWithFinInitiated = new ArrayList<>();
+
+    protected final ArrayList<TcpConnection> tcpConnectionsWithFinReceived = new ArrayList<>();
 
 
     public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, ArrayList<Link> linkedDevices) {
@@ -62,15 +63,18 @@ public abstract class Device {
         return tcpConnectionsWithSynSent;
     }
 
-    public ArrayList<TcpConnection> getTcpConnectionsWithFinSent() {
-        return tcpConnectionsWithFinSent;
+
+    public ArrayList<TcpConnection> getTcpConnectionsWithFinInitiated() {
+        return tcpConnectionsWithFinInitiated;
     }
 
-    public ArrayList<TcpConnection> getTcpConnectionWithFinReceived() {
-        return tcpConnectionWithFinReceived;
+    public ArrayList<TcpConnection> getTcpConnectionsWithFinReceived() {
+        return tcpConnectionsWithFinReceived;
     }
 
     protected abstract void processReceivedEvent(Event event);
+
+    protected abstract void processSentEvent(Event event);
 
 
     public void sendEvent(Event event) {
@@ -85,6 +89,7 @@ public abstract class Device {
             return;
         }
 
+        source.processSentEvent(event);
         destination.processReceivedEvent(event);
     }
 
