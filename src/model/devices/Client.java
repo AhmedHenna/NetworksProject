@@ -19,12 +19,23 @@ public class Client extends Device {
     private final ArrayList<IpAddress> pendingArpRequests = new ArrayList<>();
     private final ArrayList<IpAddressMacMapping> ipAddressMacMappings = new ArrayList<>();
 
-    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, ArrayList<Link> linkedDevices) {
-        super(name, macAddress, ipAddress, subnetMask, defaultGateway, linkedDevices);
+    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {
+        super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink);
+    }
+
+    public void sendEvent(Event event) {
+        Device source = event.getSource();
+
+        if (!currentIsSource(source)) {
+            return;
+        }
+
+        source.processSentEvent(networkLink.getLinkedDevice(), event);
+        networkLink.getLinkedDevice().processReceivedEvent(this, event);
     }
 
     @Override
-    protected void processSentEvent(Event event) {
+    protected void processSentEvent(Device destination, Event event) {
         if (event instanceof ArpRequestEvent) {
             processSentArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof TcpSynEvent || event instanceof TcpSynAckEvent) {
@@ -88,7 +99,7 @@ public class Client extends Device {
 
 
     @Override
-    protected void processReceivedEvent(Event event) {
+    protected void processReceivedEvent(Device source, Event event) {
         if (event instanceof ArpRequestEvent) {
             processReceivedArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof ArpResponseEvent) {

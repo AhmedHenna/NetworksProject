@@ -14,7 +14,7 @@ public abstract class Device {
     private final IpAddress ipAddress;
     private final IpAddress subnetMask;
     private final Device defaultGateway;
-    private final ArrayList<Link> linkedDevices;
+    protected final Link networkLink;
     protected final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
     protected final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
     protected final ArrayList<TcpConnection> tcpConnectionsWithFinInitiated = new ArrayList<>();
@@ -22,13 +22,13 @@ public abstract class Device {
     protected final ArrayList<TcpConnection> tcpConnectionsWithFinReceived = new ArrayList<>();
 
 
-    public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, ArrayList<Link> linkedDevices) {
+    public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {
         this.name = name;
         this.macAddress = macAddress;
         this.ipAddress = ipAddress;
         this.subnetMask = subnetMask;
         this.defaultGateway = defaultGateway;
-        this.linkedDevices = linkedDevices;
+        this.networkLink = networkLink;
     }
 
     public String getName() {
@@ -51,8 +51,8 @@ public abstract class Device {
         return defaultGateway;
     }
 
-    public ArrayList<Link> getLinkedDevices() {
-        return linkedDevices;
+    public Link getNetworkLink() {
+        return networkLink;
     }
 
     public ArrayList<TcpConnection> getTcpConnections() {
@@ -72,28 +72,14 @@ public abstract class Device {
         return tcpConnectionsWithFinReceived;
     }
 
-    protected abstract void processReceivedEvent(Event event);
+    protected abstract void processReceivedEvent(Device source,Event event);
 
-    protected abstract void processSentEvent(Event event);
+    protected abstract void processSentEvent(Device destination, Event event);
 
 
-    public void sendEvent(Event event) {
-        Device destination = event.getDestination();
-        Device source = event.getSource();
+    public abstract void sendEvent(Event event);
 
-        if (!currentIsSource(source)) {
-            return;
-        }
-
-        if (!isLinkedDevice(destination)) {
-            return;
-        }
-
-        source.processSentEvent(event);
-        destination.processReceivedEvent(event);
-    }
-
-    private boolean currentIsSource(Device source) {
+    protected boolean currentIsSource(Device source) {
         if (source != this) {
             System.out.println("ERROR: Cannot send event where source device is different from current" +
                     "\n Current IP: " + ipAddress + " Current MAC: " + macAddress +
@@ -101,25 +87,6 @@ public abstract class Device {
             return false;
         }
         return true;
-    }
-
-    private boolean isLinkedDevice(Device destination) {
-        boolean isLinkedDevice = false;
-
-        for (Link link : linkedDevices) {
-            if (link.getLinkedDevice() == destination) {
-                isLinkedDevice = true;
-                break;
-            }
-        }
-
-        if (!isLinkedDevice) {
-            System.out.println("ERROR: Cannot send event to device not directly linked." +
-                    "\n Source IP: " + ipAddress + " Source MAC: " + macAddress +
-                    "\n Dest IP: " + destination.ipAddress + " Dest MAC: " + destination.macAddress);
-        }
-
-        return isLinkedDevice;
     }
 
 }
