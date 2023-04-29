@@ -36,6 +36,7 @@ public class Client extends Device {
 
     @Override
     protected void processSentEvent(Device destination, Event event) {
+        logSentEvent(event, destination);
         if (event instanceof ArpRequestEvent) {
             processSentArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof TcpSynEvent || event instanceof TcpSynAckEvent) {
@@ -100,6 +101,7 @@ public class Client extends Device {
 
     @Override
     protected void processReceivedEvent(Device source, Event event) {
+        logReceivedEvent(event, source);
         if (event instanceof ArpRequestEvent) {
             processReceivedArpRequestEvent((ArpRequestEvent) event);
         } else if (event instanceof ArpResponseEvent) {

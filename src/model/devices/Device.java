@@ -72,7 +72,7 @@ public abstract class Device {
         return tcpConnectionsWithFinReceived;
     }
 
-    protected abstract void processReceivedEvent(Device source,Event event);
+    protected abstract void processReceivedEvent(Device source, Event event);
 
     protected abstract void processSentEvent(Device destination, Event event);
 
@@ -89,4 +89,16 @@ public abstract class Device {
         return true;
     }
 
+    protected void logSentEvent(Event event, Device destination) {
+        System.out.println(this + " Sending event: " + event.getClass() + " To: " + destination);
+    }
+
+    protected void logReceivedEvent(Event event,  Device source) {
+        System.out.println(this + " Received event: " + event.getClass() + " From: " + source);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " - " + macAddress;
+    }
 }

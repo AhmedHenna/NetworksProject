@@ -19,6 +19,7 @@ public class UdpSendDataEvent extends Event {
         this.checksum = checksum;
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
+        recreatePacket();
     }
 
 

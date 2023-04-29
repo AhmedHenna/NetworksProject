@@ -10,7 +10,7 @@ public abstract class Event {
 
     protected final Device source;
     protected final Device destination;
-    protected final Packet packet;
+    protected Packet packet;
 
     public Event(Device source, Device destination) {
         this.timestampMillis = System.currentTimeMillis();
@@ -40,5 +40,9 @@ public abstract class Event {
     }
 
     public abstract Packet createPacket();
+
+    protected void recreatePacket(){
+        this.packet = createPacket();
+    }
 
 }

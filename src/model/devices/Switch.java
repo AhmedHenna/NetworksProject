@@ -8,11 +8,10 @@ import java.util.ArrayList;
 
 public class Switch extends Device {
 
-    private final ArrayList<Link> linkedDevices;
+    private final ArrayList<Link> linkedDevices = new ArrayList<>();
 
-    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, ArrayList<Link> linkedDevices) {
+    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, null);
-        this.linkedDevices = linkedDevices;
     }
 
     @Override
@@ -49,6 +48,7 @@ public class Switch extends Device {
 
     @Override
     protected void processReceivedEvent(Device source, Event event) {
+        logReceivedEvent(event, source);
         if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
             sendToAll(event, source);
         } else {
@@ -58,6 +58,10 @@ public class Switch extends Device {
 
     @Override
     protected void processSentEvent(Device destination, Event event) {
+        logSentEvent(event, destination);
+    }
 
+    public void addLinkedDevice(Device device) {
+        this.linkedDevices.add(new Link(device, 0, 0, 0));
     }
 }

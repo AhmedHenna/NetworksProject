@@ -20,6 +20,7 @@ abstract class TcpDataEvent extends TcpEvent {
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
         this.checksum = checksum;
+        recreatePacket();
     }
 
     @Override

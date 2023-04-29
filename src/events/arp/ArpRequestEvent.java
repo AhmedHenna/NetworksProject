@@ -13,6 +13,7 @@ public class ArpRequestEvent extends Event {
     public ArpRequestEvent(Device source, Device destination, IpAddress targetIp) {
         super(source, destination);
         this.targetIp = targetIp;
+        recreatePacket();
     }
 
     @Override

@@ -20,6 +20,7 @@ public abstract class TcpEvent extends Event {
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
         this.flags = getFlags();
+        recreatePacket();
     }
 
     protected abstract ArrayList<TcpPayload.Flag> getFlags();
