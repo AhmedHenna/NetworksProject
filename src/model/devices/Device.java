@@ -9,6 +9,10 @@ import java.util.ArrayList;
 
 
 public abstract class Device {
+
+    //MSS is 1460 bytes, downscaled for testing purposes 1460/100 = 14.6 ~= 15
+    public static int MSS = 15;
+    public static int WINDOW_SIZE = MSS*3;
     private final String name;
     private final String macAddress;
     private final IpAddress ipAddress;
@@ -90,11 +94,11 @@ public abstract class Device {
     }
 
     protected void logSentEvent(Event event, Device destination) {
-        System.out.println(this + " Sending event: " + event.getClass() + " To: " + destination);
+        System.out.println(System.currentTimeMillis() + ": " + this + " Sending event: " + event.getClass() + " To: " + destination);
     }
 
     protected void logReceivedEvent(Event event,  Device source) {
-        System.out.println(this + " Received event: " + event.getClass() + " From: " + source);
+        System.out.println(System.currentTimeMillis() + ": " + this + " Received event: " + event.getClass() + " From: " + source);
     }
 
     @Override

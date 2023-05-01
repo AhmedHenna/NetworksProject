@@ -1,6 +1,5 @@
 import events.Event;
 import events.arp.ArpRequestEvent;
-import events.tcp.TcpSendDateEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;

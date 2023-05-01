@@ -1,9 +1,9 @@
 package model;
 
 public class TcpConnection {
-    private IpAddress destinationIp;
-    private int destinationPort;
-    private int sourcePort;
+    private final IpAddress destinationIp;
+    private final int destinationPort;
+    private final int sourcePort;
 
     public TcpConnection(IpAddress destinationIp, int destinationPort, int sourcePort) {
         this.destinationIp = destinationIp;

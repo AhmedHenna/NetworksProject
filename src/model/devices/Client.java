@@ -4,20 +4,20 @@ import events.Event;
 import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.*;
-import model.IpAddress;
-import model.IpAddressMacMapping;
-import model.Link;
-import model.TcpConnection;
+import model.*;
 import model.packet.IpPayload;
 import model.packet.Packet;
 import model.packet.transport.TcpPayload;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Client extends Device {
 
     private final ArrayList<IpAddress> pendingArpRequests = new ArrayList<>();
     private final ArrayList<IpAddressMacMapping> ipAddressMacMappings = new ArrayList<>();
+
+    private final ArrayList<TcpCurrentSendingState> currentSendingStates = new ArrayList<>();
 
     public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink);
@@ -47,6 +47,8 @@ public class Client extends Device {
             processSentTcpFinEvent((TcpFinEvent) event);
         } else if (event instanceof TcpFinAckEvent) {
             processSentTcpFinAckEvent((TcpFinAckEvent) event);
+        } else if (event instanceof TcpSendDataEvent) {
+            processSentTcpSendDataEvent((TcpSendDataEvent) event);
         }
     }
 
@@ -96,6 +98,45 @@ public class Client extends Device {
             deleteFromConnections(tcpConnectionsWithFinInitiated, currentConnection);
             deleteFromConnections(tcpConnections, currentConnection);
         }
+    }
+
+    private void processSentTcpSendDataEvent(TcpSendDataEvent event) {
+        IpPayload ipPayload = event.getPacket().getIpPayload();
+        TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
+
+        TcpConnection currentConnection = new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+
+        if (hasTcpConnection(currentConnection)) {
+            byte[] data = event.getData();
+            byte[][] segments = splitIntoSegments(data);
+            ArrayList<TcpSendDataSegmentEvent> sendDataSegmentEvents = new ArrayList<>();
+            int sequenceNumber = 1;
+            for (byte[] segment : segments) {
+                TcpSendDataSegmentEvent sendDataSegmentEvent = new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment, tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber, new String(segment));
+                sendDataSegmentEvents.add(sendDataSegmentEvent);
+                sequenceNumber += segment.length;
+            }
+            //TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, );
+
+        }
+    }
+
+    //Based on https://stackoverflow.com/a/39788851
+    private byte[][] splitIntoSegments(byte[] data) {
+        if (data.length <= Device.MSS) {
+            return new byte[][]{data};
+        }
+        int lastArrayLength = data.length % Device.MSS;
+        int numberOfSegments = data.length / Device.MSS + (lastArrayLength > 0 ? 1 : 0);
+        byte[][] segments = new byte[numberOfSegments][];
+
+        for (int i = 0; i < (lastArrayLength > 0 ? numberOfSegments - 1 : numberOfSegments); i++) {
+            segments[i] = Arrays.copyOfRange(data, i * Device.MSS, i * Device.MSS + Device.MSS);
+        }
+        if (lastArrayLength > 0) {
+            segments[numberOfSegments - 1] = Arrays.copyOfRange(data, (numberOfSegments - 1) * Device.MSS, (numberOfSegments - 1) * Device.MSS + lastArrayLength);
+        }
+        return segments;
     }
 
 
