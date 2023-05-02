@@ -12,7 +12,9 @@ public abstract class Device {
 
     //MSS is 1460 bytes, downscaled for testing purposes 1460/100 = 14.6 ~= 15
     public static int MSS = 15;
-    public static int WINDOW_SIZE = MSS*3;
+
+    //Number of event allowed at a given point
+    public static int WINDOW_SIZE = 3;
     private final String name;
     private final String macAddress;
     private final IpAddress ipAddress;

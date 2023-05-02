@@ -3,38 +3,45 @@ package model;
 import events.tcp.TcpSendDataSegmentEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Stack;
 
 public class TcpCurrentSendingState {
     private TcpConnection connection;
-    private ArrayList<TcpSendDataSegmentEvent> pendingSendDataEvents;
-    private ArrayList<TcpSendDataSegmentEvent> sentDataEvents;
 
-    private int currentSequenceNumber;
+    private Set<Integer> acknowledgedNumbers;
+    private Stack<TcpSendDataSegmentEvent> pendingSendDataEvents;
+    private HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents;
 
-    public TcpCurrentSendingState(TcpConnection connection, ArrayList<TcpSendDataSegmentEvent> pendingSendDataEvents, ArrayList<TcpSendDataSegmentEvent> sentDataEvents, int currentSequenceNumber) {
+    private int lastSequenceNumber;
+
+    public TcpCurrentSendingState(TcpConnection connection, Stack<TcpSendDataSegmentEvent> pendingSendDataEvents, HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastSequenceNumber, Set<Integer> acknowledgedNumbers) {
         this.connection = connection;
         this.pendingSendDataEvents = pendingSendDataEvents;
         this.sentDataEvents = sentDataEvents;
-        this.currentSequenceNumber = currentSequenceNumber;
+        this.lastSequenceNumber = lastSequenceNumber;
+        this.acknowledgedNumbers = acknowledgedNumbers;
     }
 
     public TcpConnection getConnection() {
         return connection;
     }
 
-    public ArrayList<TcpSendDataSegmentEvent> getPendingSendDataEvents() {
+    public Stack<TcpSendDataSegmentEvent> getPendingSendDataEvents() {
         return pendingSendDataEvents;
     }
 
-    public ArrayList<TcpSendDataSegmentEvent> getSentDataEvents() {
+    public HashMap<Integer, TcpSendDataSegmentEvent> getSentDataEvents() {
         return sentDataEvents;
     }
 
-    public int getCurrentSequenceNumber() {
-        return currentSequenceNumber;
+    public Set<Integer> getAcknowledgedNumbers() {
+        return acknowledgedNumbers;
     }
 
-    public void setCurrentSequenceNumber(int currentSequenceNumber) {
-        this.currentSequenceNumber = currentSequenceNumber;
+    public int getLastSequenceNumber() {
+        return lastSequenceNumber;
     }
+
 }

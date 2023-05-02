@@ -9,8 +9,7 @@ import model.packet.IpPayload;
 import model.packet.Packet;
 import model.packet.transport.TcpPayload;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Client extends Device {
 
@@ -109,15 +108,27 @@ public class Client extends Device {
         if (hasTcpConnection(currentConnection)) {
             byte[] data = event.getData();
             byte[][] segments = splitIntoSegments(data);
-            ArrayList<TcpSendDataSegmentEvent> sendDataSegmentEvents = new ArrayList<>();
+            Stack<TcpSendDataSegmentEvent> sendDataSegmentEvents = new Stack<>();
+            HashMap<Integer, TcpSendDataSegmentEvent> sentDataSegmentEvent = new HashMap<>();
             int sequenceNumber = 1;
-            for (byte[] segment : segments) {
-                TcpSendDataSegmentEvent sendDataSegmentEvent = new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment, tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber, new String(segment));
-                sendDataSegmentEvents.add(sendDataSegmentEvent);
-                sequenceNumber += segment.length;
+            for (int i = 0; i < segments.length; i++) {
+                byte[] segment = segments[i];
+                TcpSendDataSegmentEvent sendDataSegmentEvent = new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment, tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber, new String(segment), System.currentTimeMillis(), event.getWindowSize());
+                sendDataSegmentEvents.push(sendDataSegmentEvent);
+                if (i != segments.length - 1) {
+                    sequenceNumber += segment.length;
+                }
             }
-            //TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, );
 
+            for (int i = 0; i < event.getWindowSize(); i++) {
+                if (!sendDataSegmentEvents.empty()) {
+                    TcpSendDataSegmentEvent sendDataSegmentEvent = sendDataSegmentEvents.pop();
+                    sentDataSegmentEvent.put(sendDataSegmentEvent.getSequenceNumber(), sendDataSegmentEvent);
+                    sendEvent(sendDataSegmentEvent);
+                }
+            }
+            TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, sendDataSegmentEvents, sentDataSegmentEvent, sequenceNumber, new HashSet<>());
+            currentSendingStates.add(currentSendingState);
         }
     }
 
@@ -157,6 +168,8 @@ public class Client extends Device {
             processReceivedTcpFinEvent((TcpFinEvent) event);
         } else if (event instanceof TcpFinAckEvent) {
             processReceivedTcpFinAckEvent((TcpFinAckEvent) event);
+        } else if (event instanceof TcpAckDataSegmentEvent) {
+            processReceivedTcpAckDataSegmentEvent((TcpAckDataSegmentEvent) event);
         }
     }
 
@@ -241,6 +254,58 @@ public class Client extends Device {
         }
     }
 
+    private void processReceivedTcpAckDataSegmentEvent(TcpAckDataSegmentEvent event) {
+        IpPayload ipPayload = event.getPacket().getIpPayload();
+        TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
+
+        TcpConnection currentConnection = new TcpConnection(ipPayload.getSourceIp(), tcpPayload.getSourcePort(), tcpPayload.getDestinationPort());
+        TcpCurrentSendingState currentSendingState = getCurrentSendingState(currentConnection);
+        if (currentSendingState != null) {
+            int ackNumber = event.getAcknowledgmentNumber();
+            Set<Integer> acknowledgedNumbers = currentSendingState.getAcknowledgedNumbers();
+            Stack<TcpSendDataSegmentEvent> pendingSendDataEvents = currentSendingState.getPendingSendDataEvents();
+            HashMap<Integer, TcpSendDataSegmentEvent> sentEvents = currentSendingState.getSentDataEvents();
+            acknowledgedNumbers.add(ackNumber);
+
+            int resentEvents = 0;
+            for (Map.Entry<Integer, TcpSendDataSegmentEvent> sentEvent : sentEvents.entrySet()) {
+                if (sentEvent.getKey() == ackNumber && resentEvents < event.getWindowSize()) {
+                    sentEvents.put(sentEvent.getValue().getSequenceNumber(), sentEvent.getValue());
+                    sendEvent(sentEvent.getValue());
+                    resentEvents++;
+                }
+            }
+
+            if (resentEvents < event.getWindowSize()) {
+                for (int i = 0; i < event.getWindowSize() - resentEvents; i++) {
+                    if (!currentSendingState.getPendingSendDataEvents().empty()) {
+                        TcpSendDataSegmentEvent sendDataSegmentEvent = pendingSendDataEvents.pop();
+                        sentEvents.put(sendDataSegmentEvent.getSequenceNumber(), sendDataSegmentEvent);
+                        sendEvent(sendDataSegmentEvent);
+                    }
+                }
+            }
+
+            if (pendingSendDataEvents.empty() && acknowledgedNumbers.size() == sentEvents.size() && acknowledgedNumbers.contains(currentSendingState.getLastSequenceNumber())) {
+                currentSendingStates.remove(currentSendingState);
+            }
+
+        }
+
+    }
+
+
+    private TcpCurrentSendingState getCurrentSendingState(TcpConnection connection) {
+        for (TcpCurrentSendingState s : currentSendingStates) {
+            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp())
+                    && s.getConnection().getDestinationPort() == connection.getDestinationPort()
+                    && s.getConnection().getSourcePort() == connection.getSourcePort()
+            ) {
+                return s;
+            }
+        }
+        return null;
+    }
 
     private boolean hasTcpConnection(TcpConnection connection) {
         return connectionsContain(tcpConnections, connection);

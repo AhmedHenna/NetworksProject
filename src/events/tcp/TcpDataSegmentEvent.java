@@ -14,13 +14,29 @@ abstract class TcpDataSegmentEvent extends TcpEvent {
 
     private final String checksum;
 
-    public TcpDataSegmentEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber, String checksum) {
+    private int windowSize;
+
+
+    public TcpDataSegmentEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber, String checksum, int windowSize) {
         super(source, destination, sourcePort, destinationPort);
         this.data = data;
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
         this.checksum = checksum;
+        this.windowSize = windowSize;
         recreatePacket();
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public int getAcknowledgmentNumber() {
+        return acknowledgmentNumber;
+    }
+
+    public int getWindowSize() {
+        return windowSize;
     }
 
     @Override
