@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class ClientUtil {
 
     public static void deleteConnection(Client client, TcpConnection connection) {
-        TcpCurrentReceivingState currentReceivingState = getCurrentReceivingState(client,connection);
+        TcpCurrentReceivingState currentReceivingState = getCurrentReceivingState(client, connection);
         if (currentReceivingState != null) {
             client.log("Received Data: " + currentReceivingState.getData());
             client.currentReceivingStates.remove(currentReceivingState);

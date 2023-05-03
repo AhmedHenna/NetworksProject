@@ -10,8 +10,8 @@ public class ClientReceivedTcpFinAckEventHandler extends ClientEventHandler {
     @Override
     public void processEvent(Client client, Event event) {
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
-        if (ClientUtil.hasReceivedFin(client,currentConnection)) {
-            ClientUtil.deleteConnection(client,currentConnection);
+        if (ClientUtil.hasReceivedFin(client, currentConnection)) {
+            ClientUtil.deleteConnection(client, currentConnection);
         }
     }
 }

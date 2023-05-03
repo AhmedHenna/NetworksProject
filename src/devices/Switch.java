@@ -1,6 +1,5 @@
 package devices;
 
-import devices.Device;
 import events.Event;
 import model.IpAddress;
 import model.Link;

@@ -8,11 +8,8 @@ import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.*;
 import model.*;
-import model.packet.IpPayload;
-import model.packet.Packet;
-import model.packet.transport.TcpPayload;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Client extends Device {
 
@@ -45,9 +42,9 @@ public class Client extends Device {
     public void processSentEvent(Device destination, Event event) {
         logSentEvent(event, destination);
         if (event instanceof ArpRequestEvent) {
-            new ClientSentArpRequestEventHandler().processEvent(this,event);
+            new ClientSentArpRequestEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSynEvent || event instanceof TcpSynAckEvent) {
-            new ClientSentTcpSynEventHandler().processEvent(this,event);
+            new ClientSentTcpSynEventHandler().processEvent(this, event);
         } else if (event instanceof TcpAckEvent) {
             new ClientSentTcpAckEventHandler().processEvent(this, event);
         } else if (event instanceof TcpFinEvent) {
@@ -55,7 +52,7 @@ public class Client extends Device {
         } else if (event instanceof TcpFinAckEvent) {
             new ClientSentTcpFinAckEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSendDataEvent) {
-            new ClientSentTcpSendDataEventHandler().processEvent(this,event);
+            new ClientSentTcpSendDataEventHandler().processEvent(this, event);
         }
     }
 

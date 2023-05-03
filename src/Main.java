@@ -1,10 +1,10 @@
+import devices.Switch;
+import devices.client.Client;
 import events.Event;
 import events.arp.ArpRequestEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;
-import devices.client.Client;
-import devices.Switch;
 
 import java.util.ArrayList;
 

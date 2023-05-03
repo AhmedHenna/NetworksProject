@@ -19,7 +19,7 @@ import java.util.Stack;
 public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHandler {
     @Override
     public void processEvent(Client client, Event e) {
-        TcpAckDataSegmentEvent event = (TcpAckDataSegmentEvent)e;
+        TcpAckDataSegmentEvent event = (TcpAckDataSegmentEvent) e;
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
         TcpCurrentSendingState currentSendingState = ClientUtil.getCurrentSendingState(client, currentConnection);

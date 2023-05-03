@@ -23,7 +23,7 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         TcpConnection currentConnection = ClientUtil.getSendingTcpConnection(event.getPacket());
 
-        if (ClientUtil.hasTcpConnection(client,currentConnection)) {
+        if (ClientUtil.hasTcpConnection(client, currentConnection)) {
             byte[] data = event.getData();
             byte[][] segments = splitIntoSegments(data);
             Stack<TcpSendDataSegmentEvent> sendDataSegmentEvents = new Stack<>();

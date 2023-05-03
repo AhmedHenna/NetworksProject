@@ -17,7 +17,7 @@ import java.util.TreeMap;
 public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHandler {
     @Override
     public void processEvent(Client client, Event e) {
-        TcpSendDataSegmentEvent event = (TcpSendDataSegmentEvent)e;
+        TcpSendDataSegmentEvent event = (TcpSendDataSegmentEvent) e;
 
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
 

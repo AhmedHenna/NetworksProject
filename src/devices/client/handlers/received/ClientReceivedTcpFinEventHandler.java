@@ -14,11 +14,11 @@ public class ClientReceivedTcpFinEventHandler extends ClientEventHandler {
     public void processEvent(Client client, Event event) {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
-        if (ClientUtil.hasTcpConnection(client,currentConnection)) {
+        if (ClientUtil.hasTcpConnection(client, currentConnection)) {
             TcpFinAckEvent tcpFinAckEvent = new TcpFinAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
             client.sendEvent(tcpFinAckEvent);
 
-            if (!ClientUtil.hasInitiatedFin(client,currentConnection)) {
+            if (!ClientUtil.hasInitiatedFin(client, currentConnection)) {
                 TcpFinEvent tcpFinEvent = new TcpFinEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
                 client.sendEvent(tcpFinEvent);
                 client.tcpConnectionsWithFinReceived.add(currentConnection);

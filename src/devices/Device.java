@@ -3,9 +3,6 @@ package devices;
 import events.Event;
 import model.IpAddress;
 import model.Link;
-import model.TcpConnection;
-
-import java.util.ArrayList;
 
 
 public abstract class Device {
