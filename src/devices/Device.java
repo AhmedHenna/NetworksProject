@@ -1,4 +1,4 @@
-package model.devices;
+package devices;
 
 import events.Event;
 import model.IpAddress;
@@ -16,10 +16,6 @@ public abstract class Device {
     //Number of event allowed at a given point
     public static int WINDOW_SIZE = 3;
     protected final Link networkLink;
-    protected final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
-    protected final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
-    protected final ArrayList<TcpConnection> tcpConnectionsWithFinInitiated = new ArrayList<>();
-    protected final ArrayList<TcpConnection> tcpConnectionsWithFinReceived = new ArrayList<>();
     private final String name;
     private final String macAddress;
     private final IpAddress ipAddress;
@@ -60,26 +56,9 @@ public abstract class Device {
         return networkLink;
     }
 
-    public ArrayList<TcpConnection> getTcpConnections() {
-        return tcpConnections;
-    }
+    public abstract void processReceivedEvent(Device source, Event event);
 
-    public ArrayList<TcpConnection> getTcpConnectionsWithSynSent() {
-        return tcpConnectionsWithSynSent;
-    }
-
-
-    public ArrayList<TcpConnection> getTcpConnectionsWithFinInitiated() {
-        return tcpConnectionsWithFinInitiated;
-    }
-
-    public ArrayList<TcpConnection> getTcpConnectionsWithFinReceived() {
-        return tcpConnectionsWithFinReceived;
-    }
-
-    protected abstract void processReceivedEvent(Device source, Event event);
-
-    protected abstract void processSentEvent(Device destination, Event event);
+    public abstract void processSentEvent(Device destination, Event event);
 
 
     public abstract void sendEvent(Event event);
@@ -94,15 +73,15 @@ public abstract class Device {
         return true;
     }
 
-    protected void logSentEvent(Event event, Device destination) {
+    public void logSentEvent(Event event, Device destination) {
         log("Sending event: " + event.getClass() + " To: " + destination);
     }
 
-    protected void logReceivedEvent(Event event, Device source) {
+    public void logReceivedEvent(Event event, Device source) {
         log("Received event: " + event.getClass() + " From: " + source);
     }
 
-    protected void log(String log) {
+    public void log(String log) {
         System.out.println(System.currentTimeMillis() + ": " + this + " " + log);
     }
 

@@ -1,6 +1,6 @@
 package events.tcp;
 
-import model.devices.Device;
+import devices.Device;
 
 public class TcpAckDataSegmentEvent extends TcpDataSegmentEvent {
     public TcpAckDataSegmentEvent(Device source, Device destination, int sourcePort, int destinationPort, int acknowledgmentNumber, String checksum, int windowSize) {

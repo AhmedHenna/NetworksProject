@@ -1,6 +1,6 @@
 package events.tcp;
 
-import model.devices.Device;
+import devices.Device;
 
 public class TcpSendDataSegmentEvent extends TcpDataSegmentEvent {
     private final long sentAt;

@@ -3,8 +3,8 @@ import events.arp.ArpRequestEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;
-import model.devices.Client;
-import model.devices.Switch;
+import devices.client.Client;
+import devices.Switch;
 
 import java.util.ArrayList;
 

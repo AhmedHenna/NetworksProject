@@ -1,6 +1,6 @@
 package model;
 
-import model.devices.Device;
+import devices.Device;
 
 public class Link {
     private final Device linkedDevice;

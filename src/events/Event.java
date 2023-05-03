@@ -1,6 +1,6 @@
 package events;
 
-import model.devices.Device;
+import devices.Device;
 import model.packet.Packet;
 
 

@@ -1,5 +1,6 @@
-package model.devices;
+package devices;
 
+import devices.Device;
 import events.Event;
 import model.IpAddress;
 import model.Link;
@@ -47,7 +48,7 @@ public class Switch extends Device {
     }
 
     @Override
-    protected void processReceivedEvent(Device source, Event event) {
+    public void processReceivedEvent(Device source, Event event) {
         logReceivedEvent(event, source);
         if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
             sendToAll(event, source);
@@ -57,7 +58,7 @@ public class Switch extends Device {
     }
 
     @Override
-    protected void processSentEvent(Device destination, Event event) {
+    public void processSentEvent(Device destination, Event event) {
         logSentEvent(event, destination);
     }
 

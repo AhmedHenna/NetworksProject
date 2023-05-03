@@ -1,4 +1,4 @@
-package model.devices;
+package devices;
 
 public class Router {
 }

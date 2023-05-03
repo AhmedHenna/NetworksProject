@@ -1,6 +1,6 @@
 package events.tcp;
 
-import model.devices.Device;
+import devices.Device;
 import model.packet.transport.TcpPayload;
 
 import java.util.ArrayList;

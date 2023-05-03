@@ -2,7 +2,7 @@ package events.arp;
 
 import events.Event;
 import model.IpAddress;
-import model.devices.Device;
+import devices.Device;
 import model.packet.IpPayload;
 import model.packet.Packet;
 
