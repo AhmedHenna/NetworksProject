@@ -96,11 +96,15 @@ public abstract class Device {
     }
 
     protected void logSentEvent(Event event, Device destination) {
-        System.out.println(System.currentTimeMillis() + ": " + this + " Sending event: " + event.getClass() + " To: " + destination);
+        log("Sending event: " + event.getClass() + " To: " + destination);
     }
 
-    protected void logReceivedEvent(Event event,  Device source) {
-        System.out.println(System.currentTimeMillis() + ": " + this + " Received event: " + event.getClass() + " From: " + source);
+    protected void logReceivedEvent(Event event, Device source) {
+        log("Received event: " + event.getClass() + " From: " + source);
+    }
+
+    protected void log(String log) {
+        System.out.println(System.currentTimeMillis() + ": " + this + " " + log);
     }
 
     @Override

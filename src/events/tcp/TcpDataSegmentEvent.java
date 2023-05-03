@@ -14,7 +14,7 @@ abstract class TcpDataSegmentEvent extends TcpEvent {
 
     private final String checksum;
 
-    private int windowSize;
+    private final int windowSize;
 
 
     public TcpDataSegmentEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int sequenceNumber, int acknowledgmentNumber, String checksum, int windowSize) {
@@ -37,6 +37,10 @@ abstract class TcpDataSegmentEvent extends TcpEvent {
 
     public int getWindowSize() {
         return windowSize;
+    }
+
+    public String getChecksum() {
+        return checksum;
     }
 
     @Override

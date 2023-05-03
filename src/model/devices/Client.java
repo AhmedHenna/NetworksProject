@@ -18,6 +18,9 @@ public class Client extends Device {
 
     private final ArrayList<TcpCurrentSendingState> currentSendingStates = new ArrayList<>();
 
+    private final ArrayList<TcpCurrentReceivingState> currentReceivingStates = new ArrayList<>();
+
+
     public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink);
     }
@@ -93,6 +96,11 @@ public class Client extends Device {
         TcpConnection currentConnection = new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
 
         if (hasInitiatedFin(currentConnection)) {
+            TcpCurrentReceivingState currentReceivingState = getCurrentReceivingState(currentConnection);
+            if (currentReceivingState != null) {
+                log("Received Data: " + currentReceivingState.getData());
+                currentReceivingStates.remove(currentReceivingState);
+            }
             deleteFromConnections(tcpConnectionsWithFinReceived, currentConnection);
             deleteFromConnections(tcpConnectionsWithFinInitiated, currentConnection);
             deleteFromConnections(tcpConnections, currentConnection);
@@ -170,6 +178,8 @@ public class Client extends Device {
             processReceivedTcpFinAckEvent((TcpFinAckEvent) event);
         } else if (event instanceof TcpAckDataSegmentEvent) {
             processReceivedTcpAckDataSegmentEvent((TcpAckDataSegmentEvent) event);
+        } else if (event instanceof TcpSendDataSegmentEvent) {
+            processReceivedTcpSendDataSegmentEvent((TcpSendDataSegmentEvent) event);
         }
     }
 
@@ -248,6 +258,11 @@ public class Client extends Device {
         TcpConnection currentConnection = new TcpConnection(ipPayload.getSourceIp(), tcpPayload.getSourcePort(), tcpPayload.getDestinationPort());
 
         if (hasReceivedFin(currentConnection)) {
+            TcpCurrentReceivingState currentReceivingState = getCurrentReceivingState(currentConnection);
+            if (currentReceivingState != null) {
+                log("Received Data: " + currentReceivingState.getData());
+                currentReceivingStates.remove(currentReceivingState);
+            }
             deleteFromConnections(tcpConnectionsWithFinReceived, currentConnection);
             deleteFromConnections(tcpConnectionsWithFinInitiated, currentConnection);
             deleteFromConnections(tcpConnections, currentConnection);
@@ -287,6 +302,8 @@ public class Client extends Device {
             }
 
             if (pendingSendDataEvents.empty() && acknowledgedNumbers.size() == sentEvents.size() && acknowledgedNumbers.contains(currentSendingState.getLastSequenceNumber())) {
+                TcpFinEvent tcpFinEvent = new TcpFinEvent(this, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+                sendEvent(tcpFinEvent);
                 currentSendingStates.remove(currentSendingState);
             }
 
@@ -294,9 +311,57 @@ public class Client extends Device {
 
     }
 
+    private void processReceivedTcpSendDataSegmentEvent(TcpSendDataSegmentEvent event) {
+        IpPayload ipPayload = event.getPacket().getIpPayload();
+        TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
+
+        TcpConnection currentConnection = new TcpConnection(ipPayload.getSourceIp(), tcpPayload.getSourcePort(), tcpPayload.getDestinationPort());
+        TcpCurrentReceivingState currentReceivingState = getCurrentReceivingState(currentConnection);
+        if (currentReceivingState != null) {
+            TreeMap<Integer, byte[]> currentReceivedData = currentReceivingState.getCurrentReceivedData();
+            byte[] data = tcpPayload.getPayload();
+
+            if (isValidChecksum(data, event.getChecksum())) {
+                currentReceivedData.put(event.getSequenceNumber(), data);
+            }
+
+            int ackNumber = currentReceivedData.lastKey() + currentReceivedData.lastEntry().getValue().length;
+            int expectedSeqNumber = 1;
+            int prevSequenceNumber = 1;
+            for (Map.Entry<Integer, byte[]> entry : currentReceivedData.entrySet()) {
+                int seqNum = entry.getKey();
+                if (seqNum != expectedSeqNumber) {
+                    ackNumber = prevSequenceNumber;
+                    break;
+                }
+
+                prevSequenceNumber = seqNum;
+                expectedSeqNumber = seqNum + entry.getValue().length;
+            }
+
+            TcpAckDataSegmentEvent tcpAckDataSegmentEvent = new TcpAckDataSegmentEvent(this, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort(), ackNumber, "", Device.WINDOW_SIZE);
+            sendEvent(tcpAckDataSegmentEvent);
+        }
+    }
+
+    private boolean isValidChecksum(byte[] data, String checksum) {
+        return new String(data).equals(checksum);
+    }
 
     private TcpCurrentSendingState getCurrentSendingState(TcpConnection connection) {
         for (TcpCurrentSendingState s : currentSendingStates) {
+            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp())
+                    && s.getConnection().getDestinationPort() == connection.getDestinationPort()
+                    && s.getConnection().getSourcePort() == connection.getSourcePort()
+            ) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private TcpCurrentReceivingState getCurrentReceivingState(TcpConnection connection) {
+        for (TcpCurrentReceivingState s : currentReceivingStates) {
             if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp())
                     && s.getConnection().getDestinationPort() == connection.getDestinationPort()
                     && s.getConnection().getSourcePort() == connection.getSourcePort()
