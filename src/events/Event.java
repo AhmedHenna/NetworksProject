@@ -41,7 +41,7 @@ public abstract class Event {
 
     public abstract Packet createPacket();
 
-    protected void recreatePacket(){
+    protected void recreatePacket() {
         this.packet = createPacket();
     }
 

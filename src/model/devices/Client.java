@@ -15,9 +15,7 @@ public class Client extends Device {
 
     private final ArrayList<IpAddress> pendingArpRequests = new ArrayList<>();
     private final ArrayList<IpAddressMacMapping> ipAddressMacMappings = new ArrayList<>();
-
     private final ArrayList<TcpCurrentSendingState> currentSendingStates = new ArrayList<>();
-
     private final ArrayList<TcpCurrentReceivingState> currentReceivingStates = new ArrayList<>();
 
 

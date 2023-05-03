@@ -15,17 +15,16 @@ public abstract class Device {
 
     //Number of event allowed at a given point
     public static int WINDOW_SIZE = 3;
+    protected final Link networkLink;
+    protected final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnectionsWithFinInitiated = new ArrayList<>();
+    protected final ArrayList<TcpConnection> tcpConnectionsWithFinReceived = new ArrayList<>();
     private final String name;
     private final String macAddress;
     private final IpAddress ipAddress;
     private final IpAddress subnetMask;
     private final Device defaultGateway;
-    protected final Link networkLink;
-    protected final ArrayList<TcpConnection> tcpConnections = new ArrayList<>();
-    protected final ArrayList<TcpConnection> tcpConnectionsWithSynSent = new ArrayList<>();
-    protected final ArrayList<TcpConnection> tcpConnectionsWithFinInitiated = new ArrayList<>();
-
-    protected final ArrayList<TcpConnection> tcpConnectionsWithFinReceived = new ArrayList<>();
 
 
     public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {

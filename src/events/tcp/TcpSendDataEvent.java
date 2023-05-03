@@ -1,8 +1,6 @@
 package events.tcp;
 
 import model.devices.Device;
-import model.packet.IpPayload;
-import model.packet.Packet;
 import model.packet.transport.TcpPayload;
 
 import java.util.ArrayList;
@@ -10,7 +8,7 @@ import java.util.ArrayList;
 public class TcpSendDataEvent extends TcpEvent {
     private final byte[] data;
 
-    private int windowSize;
+    private final int windowSize;
 
     public TcpSendDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int windowSize) {
         super(source, destination, sourcePort, destinationPort);

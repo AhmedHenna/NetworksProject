@@ -1,6 +1,5 @@
 package model;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,9 +21,9 @@ public class TcpCurrentReceivingState {
         return currentReceivedData;
     }
 
-    public String getData(){
+    public String getData() {
         StringBuilder builder = new StringBuilder();
-        for(Map.Entry<Integer, byte[]> entry: currentReceivedData.entrySet()){
+        for (Map.Entry<Integer, byte[]> entry : currentReceivedData.entrySet()) {
             builder.append(new String(entry.getValue()));
         }
 

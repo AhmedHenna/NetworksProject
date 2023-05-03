@@ -1,8 +1,8 @@
 package events.arp;
 
 import events.Event;
-import model.devices.Device;
 import model.IpAddress;
+import model.devices.Device;
 import model.packet.IpPayload;
 import model.packet.Packet;
 
