@@ -1,17 +1,20 @@
 package devices;
 
 import events.Event;
+import events.EventWithDirectSourceDestination;
+import events.SendEvent;
 import model.IpAddress;
 import model.Link;
 
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 
 public class Switch extends Device {
 
     private final ArrayList<Link> linkedDevices = new ArrayList<>();
 
-    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway) {
-        super(name, macAddress, ipAddress, subnetMask, defaultGateway, null);
+    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
+        super(name, macAddress, ipAddress, subnetMask, defaultGateway, null, eventQueue);
     }
 
     @Override
@@ -31,6 +34,7 @@ public class Switch extends Device {
         }
         if (isLinkedToDest) {
             processSentEvent(destination, event);
+            sendEventToDevice(destination, event);
             destination.processReceivedEvent(this, event);
         } else {
             sendToAll(event, eventSource);
@@ -41,7 +45,7 @@ public class Switch extends Device {
         for (Link link : linkedDevices) {
             if (link.getLinkedDevice() != eventSource) {
                 processSentEvent(link.getLinkedDevice(), event);
-                link.getLinkedDevice().processReceivedEvent(this, event);
+                sendEventToDevice(link.getLinkedDevice(), event);
             }
         }
     }

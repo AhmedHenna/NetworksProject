@@ -4,12 +4,15 @@ import devices.Device;
 import devices.client.handlers.received.*;
 import devices.client.handlers.sent.*;
 import events.Event;
+import events.EventWithDirectSourceDestination;
+import events.SendEvent;
 import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.*;
 import model.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 
 public class Client extends Device {
 
@@ -23,8 +26,8 @@ public class Client extends Device {
     public final ArrayList<TcpCurrentReceivingState> currentReceivingStates = new ArrayList<>();
 
 
-    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink) {
-        super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink);
+    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
+        super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink, eventQueue);
     }
 
     public void sendEvent(Event event) {
@@ -36,7 +39,7 @@ public class Client extends Device {
 
         boolean shouldSend = source.processSentEvent(networkLink.getLinkedDevice(), event);
         if (shouldSend) {
-            networkLink.getLinkedDevice().processReceivedEvent(this, event);
+            sendEventToDevice(networkLink.getLinkedDevice(), event);
         }
     }
 
