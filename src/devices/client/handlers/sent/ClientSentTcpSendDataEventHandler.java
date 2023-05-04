@@ -11,10 +11,7 @@ import model.TcpConnection;
 import model.TcpCurrentSendingState;
 import model.packet.transport.TcpPayload;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 
 public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
     @Override
@@ -26,27 +23,29 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
         if (ClientUtil.hasTcpConnection(client, currentConnection)) {
             byte[] data = event.getData();
             byte[][] segments = splitIntoSegments(data);
-            Stack<TcpSendDataSegmentEvent> sendDataSegmentEvents = new Stack<>();
+            Queue<TcpSendDataSegmentEvent> sendDataSegmentEvents = new LinkedList<>();
             HashMap<Integer, TcpSendDataSegmentEvent> sentDataSegmentEvent = new HashMap<>();
             int sequenceNumber = 1;
             for (int i = 0; i < segments.length; i++) {
                 byte[] segment = segments[i];
                 TcpSendDataSegmentEvent sendDataSegmentEvent = new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment, tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber, new String(segment), System.currentTimeMillis(), event.getWindowSize());
-                sendDataSegmentEvents.push(sendDataSegmentEvent);
+                sendDataSegmentEvents.add(sendDataSegmentEvent);
                 if (i != segments.length - 1) {
                     sequenceNumber += segment.length;
                 }
             }
 
+
+            TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, sendDataSegmentEvents, sentDataSegmentEvent, sequenceNumber, new HashSet<>());
+            client.currentSendingStates.add(currentSendingState);
+
             for (int i = 0; i < event.getWindowSize(); i++) {
-                if (!sendDataSegmentEvents.empty()) {
-                    TcpSendDataSegmentEvent sendDataSegmentEvent = sendDataSegmentEvents.pop();
+                if (!sendDataSegmentEvents.isEmpty()) {
+                    TcpSendDataSegmentEvent sendDataSegmentEvent = sendDataSegmentEvents.remove();
                     sentDataSegmentEvent.put(sendDataSegmentEvent.getSequenceNumber(), sendDataSegmentEvent);
                     client.sendEvent(sendDataSegmentEvent);
                 }
             }
-            TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, sendDataSegmentEvents, sentDataSegmentEvent, sequenceNumber, new HashSet<>());
-            client.currentSendingStates.add(currentSendingState);
         }
     }
 

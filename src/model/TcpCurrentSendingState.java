@@ -3,19 +3,19 @@ package model;
 import events.tcp.TcpSendDataSegmentEvent;
 
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 
 public class TcpCurrentSendingState {
     private final TcpConnection connection;
 
     private final Set<Integer> acknowledgedNumbers;
-    private final Stack<TcpSendDataSegmentEvent> pendingSendDataEvents;
+    private final Queue<TcpSendDataSegmentEvent> pendingSendDataEvents;
     private final HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents;
 
     private final int lastSequenceNumber;
 
-    public TcpCurrentSendingState(TcpConnection connection, Stack<TcpSendDataSegmentEvent> pendingSendDataEvents, HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastSequenceNumber, Set<Integer> acknowledgedNumbers) {
+    public TcpCurrentSendingState(TcpConnection connection, Queue<TcpSendDataSegmentEvent> pendingSendDataEvents, HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastSequenceNumber, Set<Integer> acknowledgedNumbers) {
         this.connection = connection;
         this.pendingSendDataEvents = pendingSendDataEvents;
         this.sentDataEvents = sentDataEvents;
@@ -27,7 +27,7 @@ public class TcpCurrentSendingState {
         return connection;
     }
 
-    public Stack<TcpSendDataSegmentEvent> getPendingSendDataEvents() {
+    public Queue<TcpSendDataSegmentEvent> getPendingSendDataEvents() {
         return pendingSendDataEvents;
     }
 

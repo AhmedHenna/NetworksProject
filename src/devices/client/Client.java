@@ -34,12 +34,14 @@ public class Client extends Device {
             return;
         }
 
-        source.processSentEvent(networkLink.getLinkedDevice(), event);
-        networkLink.getLinkedDevice().processReceivedEvent(this, event);
+        boolean shouldSend = source.processSentEvent(networkLink.getLinkedDevice(), event);
+        if (shouldSend) {
+            networkLink.getLinkedDevice().processReceivedEvent(this, event);
+        }
     }
 
     @Override
-    public void processSentEvent(Device destination, Event event) {
+    public boolean processSentEvent(Device destination, Event event) {
         logSentEvent(event, destination);
         if (event instanceof ArpRequestEvent) {
             new ClientSentArpRequestEventHandler().processEvent(this, event);
@@ -53,7 +55,9 @@ public class Client extends Device {
             new ClientSentTcpFinAckEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSendDataEvent) {
             new ClientSentTcpSendDataEventHandler().processEvent(this, event);
+            return false;
         }
+        return true;
     }
 
     @Override

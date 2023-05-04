@@ -55,7 +55,10 @@ public abstract class Device {
 
     public abstract void processReceivedEvent(Device source, Event event);
 
-    public abstract void processSentEvent(Device destination, Event event);
+    /**
+     * @return false when should abort sending event
+     */
+    public abstract boolean processSentEvent(Device destination, Event event);
 
 
     public abstract void sendEvent(Event event);

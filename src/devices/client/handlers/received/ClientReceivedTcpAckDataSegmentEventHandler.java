@@ -13,8 +13,8 @@ import model.packet.transport.TcpPayload;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 
 public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHandler {
     @Override
@@ -27,7 +27,7 @@ public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHand
         if (currentSendingState != null) {
             int ackNumber = event.getAcknowledgmentNumber();
             Set<Integer> acknowledgedNumbers = currentSendingState.getAcknowledgedNumbers();
-            Stack<TcpSendDataSegmentEvent> pendingSendDataEvents = currentSendingState.getPendingSendDataEvents();
+            Queue<TcpSendDataSegmentEvent> pendingSendDataEvents = currentSendingState.getPendingSendDataEvents();
             HashMap<Integer, TcpSendDataSegmentEvent> sentEvents = currentSendingState.getSentDataEvents();
             acknowledgedNumbers.add(ackNumber);
 
@@ -42,15 +42,15 @@ public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHand
 
             if (resentEvents < event.getWindowSize()) {
                 for (int i = 0; i < event.getWindowSize() - resentEvents; i++) {
-                    if (!currentSendingState.getPendingSendDataEvents().empty()) {
-                        TcpSendDataSegmentEvent sendDataSegmentEvent = pendingSendDataEvents.pop();
+                    if (!currentSendingState.getPendingSendDataEvents().isEmpty()) {
+                        TcpSendDataSegmentEvent sendDataSegmentEvent = pendingSendDataEvents.remove();
                         sentEvents.put(sendDataSegmentEvent.getSequenceNumber(), sendDataSegmentEvent);
                         client.sendEvent(sendDataSegmentEvent);
                     }
                 }
             }
 
-            if (pendingSendDataEvents.empty() && acknowledgedNumbers.size() == sentEvents.size() && acknowledgedNumbers.contains(currentSendingState.getLastSequenceNumber())) {
+            if (pendingSendDataEvents.isEmpty() && acknowledgedNumbers.size() == sentEvents.size() && acknowledgedNumbers.contains(currentSendingState.getLastSequenceNumber())) {
                 TcpFinEvent tcpFinEvent = new TcpFinEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
                 client.sendEvent(tcpFinEvent);
                 client.currentSendingStates.remove(currentSendingState);

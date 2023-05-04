@@ -23,6 +23,10 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
 
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
         TcpCurrentReceivingState currentReceivingState = ClientUtil.getCurrentReceivingState(client, currentConnection);
+        if (currentReceivingState == null && ClientUtil.hasTcpConnection(client, currentConnection)) {
+            currentReceivingState = new TcpCurrentReceivingState(currentConnection, new TreeMap<>());
+            client.currentReceivingStates.add(currentReceivingState);
+        }
         if (currentReceivingState != null) {
             TreeMap<Integer, byte[]> currentReceivedData = currentReceivingState.getCurrentReceivedData();
             byte[] data = tcpPayload.getPayload();

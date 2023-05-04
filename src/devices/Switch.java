@@ -57,8 +57,9 @@ public class Switch extends Device {
     }
 
     @Override
-    public void processSentEvent(Device destination, Event event) {
+    public boolean processSentEvent(Device destination, Event event) {
         logSentEvent(event, destination);
+        return true;
     }
 
     public void addLinkedDevice(Device device) {

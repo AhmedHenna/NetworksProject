@@ -1,7 +1,9 @@
+import devices.Device;
 import devices.Switch;
 import devices.client.Client;
 import events.Event;
 import events.arp.ArpRequestEvent;
+import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;
@@ -38,11 +40,12 @@ public class Main {
 
         ArpRequestEvent arpRequestEvent = new ArpRequestEvent(clientA, null, clientB.getIpAddress());
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientB, 56, 23);
-
+        TcpSendDataEvent sendDataEvent = new TcpSendDataEvent(clientA, clientB, "This is data This is data This is data This is dataThis is data This is data This is data".getBytes(), 56, 23, Device.WINDOW_SIZE);
 
         ArrayList<Event> events = new ArrayList<>();
         events.add(arpRequestEvent);
         events.add(tcpSynEvent);
+        events.add(sendDataEvent);
 
         sendEvents(events);
     }
