@@ -1,6 +1,7 @@
 package devices.client;
 
 import devices.Device;
+import devices.DeviceUtil;
 import devices.client.handlers.received.*;
 import devices.client.handlers.sent.*;
 import events.Event;
@@ -41,7 +42,12 @@ public class Client extends Device {
 
         boolean shouldSend = source.processSentEvent(networkLink.getLinkedDevice(), event);
         if (shouldSend) {
-            sendEventToDevice(networkLink.getLinkedDevice(), event);
+            if(DeviceUtil.isInSameNetwork(this, event.getDestination())) {
+                sendEventToDevice(networkLink.getLinkedDevice(), event);
+            } else {
+                sendEventToDevice(getDefaultGateway(), event);
+
+            }
         }
     }
 

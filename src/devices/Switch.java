@@ -24,6 +24,29 @@ public class Switch extends Device {
         System.err.println("sendEvent unimplemented in Switch, use sendSwitchEvent");
     }
 
+
+    @Override
+    public boolean processSentEvent(Device destination, Event event) {
+        logSentEvent(event, destination);
+        for (OnEvent onSentEvent : onSentEventListeners) {
+            onSentEvent.onEvent(event);
+        }
+        return true;
+    }
+
+    @Override
+    public void processReceivedEvent(Device source, Event event) {
+        logReceivedEvent(event, source);
+        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
+            onReceivedEvent.onEvent(event);
+        }
+        if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
+            sendToAll(event, source);
+        } else {
+            sendSwitchEvent(event, source);
+        }
+    }
+
     private void sendSwitchEvent(Event event, Device eventSource) {
         Device destination = event.getDestination();
         boolean isLinkedToDest = false;
@@ -51,29 +74,8 @@ public class Switch extends Device {
         }
     }
 
-    @Override
-    public void processReceivedEvent(Device source, Event event) {
-        //logReceivedEvent(event, source);
-        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
-            onReceivedEvent.onEvent(event);
-        }
-        if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
-            sendToAll(event, source);
-        } else {
-            sendSwitchEvent(event, source);
-        }
-    }
-
-    @Override
-    public boolean processSentEvent(Device destination, Event event) {
-        //logSentEvent(event, destination);
-        for (OnEvent onSentEvent : onSentEventListeners) {
-            onSentEvent.onEvent(event);
-        }
-        return true;
-    }
 
     public void addLinkedDevice(Device device) {
-        this.linkedDevices.add(new Link(device, 0, 0, 0));
+        this.linkedDevices.add(new Link(device, 0));
     }
 }

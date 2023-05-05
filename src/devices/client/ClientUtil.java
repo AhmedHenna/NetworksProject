@@ -1,5 +1,7 @@
 package devices.client;
 
+import devices.Device;
+import model.IpAddress;
 import model.TcpConnection;
 import model.TcpCurrentReceivingState;
 import model.TcpCurrentSendingState;

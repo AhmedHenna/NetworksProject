@@ -23,11 +23,11 @@ public class Main {
         Switch switchA = new Switch("Switch A", "00:00:00:00:00:00", null, null, null, eventQueue);
 
         Client clientA = new Client("Client A", "11:11:11:11:11:11", new IpAddress(192, 168, 1, 2), subnetMask, null,
-                new Link(switchA, 0, 0, 0), eventQueue
+                new Link(switchA, 0), eventQueue
         );
 
         Client clientB = new Client("Client B", "12:11:11:11:11:11", new IpAddress(192, 168, 1, 3), subnetMask, null,
-                new Link(switchA, 0, 0, 0), eventQueue
+                new Link(switchA, 0), eventQueue
         );
 
         switchA.addLinkedDevice(clientA);
