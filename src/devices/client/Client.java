@@ -5,6 +5,7 @@ import devices.client.handlers.received.*;
 import devices.client.handlers.sent.*;
 import events.Event;
 import events.EventWithDirectSourceDestination;
+import events.OnEvent;
 import events.SendEvent;
 import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
@@ -46,6 +47,7 @@ public class Client extends Device {
     @Override
     public boolean processSentEvent(Device destination, Event event) {
         logSentEvent(event, destination);
+        boolean shouldSend = true;
         if (event instanceof ArpRequestEvent) {
             new ClientSentArpRequestEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSynEvent || event instanceof TcpSynAckEvent) {
@@ -58,9 +60,13 @@ public class Client extends Device {
             new ClientSentTcpFinAckEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSendDataEvent) {
             new ClientSentTcpSendDataEventHandler().processEvent(this, event);
-            return false;
+            shouldSend = false;
         }
-        return true;
+
+        for(OnEvent onSentEvent: onSentEventListeners){
+            onSentEvent.onEvent(event);
+        }
+        return shouldSend;
     }
 
     @Override
@@ -84,6 +90,9 @@ public class Client extends Device {
             new ClientReceivedTcpAckDataSegmentEventHandler().processEvent(this, event);
         } else if (event instanceof TcpSendDataSegmentEvent) {
             new ClientReceivedTcpSendDataSegmentEventHandler().processEvent(this, event);
+        }
+        for(OnEvent onReceivedEvent: onReceivedEventListeners){
+            onReceivedEvent.onEvent(event);
         }
     }
 }

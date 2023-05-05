@@ -4,6 +4,8 @@ import devices.client.Client;
 import events.Event;
 import events.EventWithDirectSourceDestination;
 import events.arp.ArpRequestEvent;
+import events.arp.ArpResponseEvent;
+import events.tcp.TcpAckEvent;
 import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
@@ -12,10 +14,11 @@ import model.Link;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class Main {
 
-    private static BlockingQueue<EventWithDirectSourceDestination> eventQueue = new LinkedBlockingDeque<>();
+    private static BlockingQueue<EventWithDirectSourceDestination> eventQueue = new PriorityBlockingQueue<>();
     public static void main(String[] args) {
         IpAddress subnetMask = new IpAddress(255, 255, 255, 0);
 
@@ -49,26 +52,30 @@ public class Main {
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientB, 56, 23);
         TcpSendDataEvent sendDataEvent = new TcpSendDataEvent(clientA, clientB, "This is data This is data This is data This is dataThis is data This is data This is data".getBytes(), 56, 23, Device.WINDOW_SIZE);
 
-        ArrayList<Event> events = new ArrayList<>();
-        events.add(arpRequestEvent);
-//        events.add(tcpSynEvent);
-//        events.add(sendDataEvent);
+        clientA.addOnReceivedEventListener(event -> {
+            if(event instanceof ArpResponseEvent){
+                clientA.sendEvent(tcpSynEvent);
+            } else if(event instanceof TcpAckEvent){
+                clientA.sendEvent(sendDataEvent);
+            }
+        });
+        clientA.addOnSentEventListener(event -> {
+            if(event instanceof TcpAckEvent){
+                clientA.sendEvent(sendDataEvent);
+            }
+        });
 
-        //TODO: Figure out how to run events when a particular flow finishes (onFinishArp/onConnectionEstablished?)
 
         clientA.start();
         clientB.start();
         switchA.start();
 
-        sendEvents(events);
+        clientA.sendEvent(arpRequestEvent);
+
+
         listenForQueueUpdates();
     }
 
-    private static void sendEvents(ArrayList<Event> events) {
-        for (Event event : events) {
-            event.getSource().sendEvent(event);
-        }
-    }
 
     private static void listenForQueueUpdates(){
         while (true){

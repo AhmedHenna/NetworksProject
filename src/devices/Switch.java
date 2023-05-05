@@ -2,6 +2,7 @@ package devices;
 
 import events.Event;
 import events.EventWithDirectSourceDestination;
+import events.OnEvent;
 import events.SendEvent;
 import model.IpAddress;
 import model.Link;
@@ -35,7 +36,6 @@ public class Switch extends Device {
         if (isLinkedToDest) {
             processSentEvent(destination, event);
             sendEventToDevice(destination, event);
-            destination.processReceivedEvent(this, event);
         } else {
             sendToAll(event, eventSource);
         }
@@ -52,7 +52,10 @@ public class Switch extends Device {
 
     @Override
     public void processReceivedEvent(Device source, Event event) {
-        logReceivedEvent(event, source);
+        //logReceivedEvent(event, source);
+        for(OnEvent onReceivedEvent: onReceivedEventListeners){
+            onReceivedEvent.onEvent(event);
+        }
         if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
             sendToAll(event, source);
         } else {
@@ -62,7 +65,10 @@ public class Switch extends Device {
 
     @Override
     public boolean processSentEvent(Device destination, Event event) {
-        logSentEvent(event, destination);
+        //logSentEvent(event, destination);
+        for(OnEvent onSentEvent: onSentEventListeners){
+            onSentEvent.onEvent(event);
+        }
         return true;
     }
 

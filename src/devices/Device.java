@@ -2,9 +2,14 @@ package devices;
 
 import events.Event;
 import events.EventWithDirectSourceDestination;
+import events.OnEvent;
 import model.IpAddress;
 import model.Link;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 
@@ -21,6 +26,8 @@ public abstract class Device extends Thread {
     private final IpAddress subnetMask;
     private final Device defaultGateway;
     private final BlockingQueue<EventWithDirectSourceDestination> eventQueue;
+    protected ArrayList<OnEvent> onSentEventListeners = new ArrayList<>();
+    protected ArrayList<OnEvent> onReceivedEventListeners = new ArrayList<>();
 
 
     public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
@@ -53,6 +60,22 @@ public abstract class Device extends Thread {
         return networkLink;
     }
 
+    public void addOnReceivedEventListener(OnEvent onReceivedEvent) {
+        this.onReceivedEventListeners.add(onReceivedEvent);
+    }
+
+    public void removeOnReceivedEventListener(OnEvent onReceivedEvent) {
+        this.onReceivedEventListeners.remove(onReceivedEvent);
+    }
+
+    public void addOnSentEventListener(OnEvent onSentEvent) {
+        this.onSentEventListeners.add(onSentEvent);
+    }
+
+    public void removeOnSentEventListener(OnEvent onSentEvent) {
+        this.onSentEventListeners.remove(onSentEvent);
+    }
+
     public abstract void processReceivedEvent(Device source, Event event);
 
     /**
@@ -77,20 +100,44 @@ public abstract class Device extends Thread {
     }
 
     public void logSentEvent(Event event, Device destination) {
-        log("Sending event: " + event.getClass() + " To: " + destination);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Sent", 8), toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("To", 4), toLength(destination.toString(), 10));
     }
 
     public void logReceivedEvent(Event event, Device source) {
-        log("Received event: " + event.getClass() + " From: " + source);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Received", 8), toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("From", 4), toLength(source.toString(), 10));
     }
 
-    public void log(String log) {
-        System.out.println(System.currentTimeMillis() + ": " + this + " " + log);
+
+    public void log(String... log) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        ArrayList<String> fullLog = new ArrayList<>();
+        fullLog.add(dateFormat.format(new Date(System.currentTimeMillis())));
+        fullLog.add(toLength(toString(), 10));
+        fullLog.addAll(List.of(log));
+        for (int i = 0; i < fullLog.size(); i++) {
+            String s = fullLog.get(i);
+            System.out.print("| " + s + " ");
+            if (i == fullLog.size() - 1) {
+                System.out.print("|");
+            }
+        }
+        System.out.println();
     }
 
     @Override
     public String toString() {
-        return getName() + " - " + macAddress;
+        return getName();
+    }
+
+    private String toLength(String s, int l) {
+        if (s.length() > l) {
+            return s.substring(0, l - 1);
+        } else if (s.length() < l) {
+            return s + " ".repeat(l - s.length());
+        }
+        return s;
     }
 
     @Override

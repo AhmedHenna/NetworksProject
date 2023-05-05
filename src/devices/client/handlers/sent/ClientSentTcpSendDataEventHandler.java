@@ -43,6 +43,7 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
                 if (!sendDataSegmentEvents.isEmpty()) {
                     TcpSendDataSegmentEvent sendDataSegmentEvent = sendDataSegmentEvents.remove();
                     sentDataSegmentEvent.put(sendDataSegmentEvent.getSequenceNumber(), sendDataSegmentEvent);
+
                     client.sendEvent(sendDataSegmentEvent);
                 }
             }

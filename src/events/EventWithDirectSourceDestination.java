@@ -2,7 +2,7 @@ package events;
 
 import devices.Device;
 
-public class EventWithDirectSourceDestination {
+public class EventWithDirectSourceDestination implements Comparable {
     private final Event event;
     private final Device destination;
     private final Device source;
@@ -24,5 +24,10 @@ public class EventWithDirectSourceDestination {
 
     public Device getSource() {
         return source;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return Long.compare(event.getTimestampMillis(), ((EventWithDirectSourceDestination) o).event.getTimestampMillis());
     }
 }
