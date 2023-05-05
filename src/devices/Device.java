@@ -91,6 +91,32 @@ public abstract class Device extends Thread {
 
     public abstract void sendEvent(Event event);
 
+    protected void callOnReceivedListeners(Event event) {
+        try {
+            //Sleep in case event is sent from listeners,
+            // makes sure it is received after any events sent through normal processing
+            sleep(100);
+            for (OnEvent onReceivedEvent : onReceivedEventListeners) {
+                onReceivedEvent.onEvent(event);
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted while waiting to call received event listeners");
+        }
+    }
+
+    protected void callOnSentListeners(Event event) {
+        try {
+            //Sleep in case event is sent from listeners,
+            // makes sure it is received after any events sent through normal processing
+            sleep(100);
+            for (OnEvent onSentEvent : onSentEventListeners) {
+                onSentEvent.onEvent(event);
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted while waiting to call sent event listeners");
+        }
+    }
+
     protected boolean currentIsSource(Device source) {
         if (source != this) {
             System.out.println(
@@ -102,16 +128,22 @@ public abstract class Device extends Thread {
 
     public void logSentEvent(Event event, Device destination) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Sent", 8),
-                toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("To", 4),
+        log(
+                dateFormat.format(new Date(event.getTimestampMillis())),
+                toLength("Sent", 8),
+                toLength(event.getClass().toString().replace("class events.", ""), 30),
+                toLength("To", 4),
                 toLength(destination.toString(), 10)
         );
     }
 
     public void logReceivedEvent(Event event, Device source) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Received", 8),
-                toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("From", 4),
+        log(
+                dateFormat.format(new Date(event.getTimestampMillis())),
+                toLength("Received", 8),
+                toLength(event.getClass().toString().replace("class events.", ""), 30),
+                toLength("From", 4),
                 toLength(source.toString(), 10)
         );
     }

@@ -64,9 +64,7 @@ public class Client extends Device {
             shouldSend = false;
         }
 
-        for (OnEvent onSentEvent : onSentEventListeners) {
-            onSentEvent.onEvent(event);
-        }
+        callOnSentListeners(event);
         return shouldSend;
     }
 
@@ -92,8 +90,7 @@ public class Client extends Device {
         } else if (event instanceof TcpSendDataSegmentEvent) {
             new ClientReceivedTcpSendDataSegmentEventHandler().processEvent(this, event);
         }
-        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
-            onReceivedEvent.onEvent(event);
-        }
+
+        callOnReceivedListeners(event);
     }
 }

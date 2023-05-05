@@ -49,9 +49,8 @@ public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHand
                     }
                 }
             }
-
             if (pendingSendDataEvents.isEmpty() && acknowledgedNumbers.size() == sentEvents.size() && acknowledgedNumbers.contains(
-                    currentSendingState.getLastSequenceNumber())) {
+                    currentSendingState.getLastAckNumber())) {
                 TcpFinEvent tcpFinEvent = new TcpFinEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
                         tcpPayload.getSourcePort()
                 );

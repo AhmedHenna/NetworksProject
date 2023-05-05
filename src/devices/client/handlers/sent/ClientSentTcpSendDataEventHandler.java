@@ -26,17 +26,14 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
             Queue<TcpSendDataSegmentEvent> sendDataSegmentEvents = new LinkedList<>();
             HashMap<Integer, TcpSendDataSegmentEvent> sentDataSegmentEvent = new HashMap<>();
             int sequenceNumber = 1;
-            for (int i = 0; i < segments.length; i++) {
-                byte[] segment = segments[i];
+            for (byte[] segment : segments) {
                 TcpSendDataSegmentEvent sendDataSegmentEvent =
                         new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment,
                                 tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber,
                                 new String(segment), System.currentTimeMillis(), event.getWindowSize()
                         );
                 sendDataSegmentEvents.add(sendDataSegmentEvent);
-                if (i != segments.length - 1) {
-                    sequenceNumber += segment.length;
-                }
+                sequenceNumber += segment.length;
             }
 
 
