@@ -20,54 +20,6 @@ public class Main {
 
     private static final BlockingQueue<EventWithDirectSourceDestination> eventQueue = new PriorityBlockingQueue<>();
 
-//    public static void main(String[] args) {
-//        IpAddress subnetMask = new IpAddress(255, 255, 255, 0);
-//
-//        Switch switchA = new Switch("Switch A", "00:00:00:00:00:00", null, null, null, eventQueue);
-//
-//        Client clientA = new Client("Client A", "11:11:11:11:11:11", new IpAddress(192, 168, 1, 2), subnetMask, null,
-//                new Link(switchA, 0), eventQueue
-//        );
-//
-//        Client clientB = new Client("Client B", "12:11:11:11:11:11", new IpAddress(192, 168, 1, 3), subnetMask, null,
-//                new Link(switchA, 0), eventQueue
-//        );
-//
-//        switchA.addLinkedDevice(clientA);
-//        switchA.addLinkedDevice(clientB);
-//
-//
-//        ArpRequestEvent arpRequestEvent = new ArpRequestEvent(clientA, null, clientB.getIpAddress());
-//        TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientB, 56, 23);
-//        TcpSendDataEvent sendDataEvent = new TcpSendDataEvent(clientA, clientB,
-//                "This is data This is data This is data This is dataThis is data This is data This is data".getBytes(),
-//                56, 23, Device.WINDOW_SIZE
-//        );
-//
-//        clientA.addOnReceivedEventListener(event -> {
-//            if (event instanceof ArpResponseEvent) {
-//                clientA.sendEvent(tcpSynEvent);
-//            } else if (event instanceof TcpAckEvent) {
-//                clientA.sendEvent(sendDataEvent);
-//            }
-//        });
-//        clientA.addOnSentEventListener(event -> {
-//            if (event instanceof TcpAckEvent) {
-//                clientA.sendEvent(sendDataEvent);
-//            }
-//        });
-//
-//
-//        clientA.start();
-//        clientB.start();
-//        switchA.start();
-//
-//        clientA.sendEvent(arpRequestEvent);
-//
-//
-//        listenForQueueUpdates();
-//    }
-
 
     public static void main(String[] args) {
         ArrayList<Router> routers = new ArrayList<>();
@@ -88,8 +40,11 @@ public class Main {
         routers.add(routerA);
         routers.add(routerB);
 
-        routerA.addLinkedDevice(routerB);
-        routerB.addLinkedDevice(routerA);
+        routerA.addLinkedDevice(routerB, 0);
+        routerB.addLinkedDevice(routerA, 0);
+
+        routerA.buildRoutes();
+        routerB.buildRoutes();
 
         Client clientA = new Client("Client A", randomMac(), new IpAddress(192, 168, 1, 2), subnetMask, routerA,
                 new Link(switchA, 0), eventQueue

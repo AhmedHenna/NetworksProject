@@ -6,6 +6,8 @@ import events.OnEvent;
 import model.IpAddress;
 import model.Link;
 import model.Route;
+import routing_strategy.DijkstraRoutingStrategy;
+import routing_strategy.RoutingStrategy;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
@@ -15,6 +17,8 @@ public class Router extends Device {
     public final ArrayList<Route> routingTable = new ArrayList<>();
     private final ArrayList<Link> linkedDevices = new ArrayList<>();
     public final ArrayList<Router> allRouters;
+
+    private final RoutingStrategy routingStrategy = new DijkstraRoutingStrategy();
 
 
     public Router(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
@@ -74,32 +78,24 @@ public class Router extends Device {
         return null;
     }
 
-    public void addLinkedDevice(Device device) {
-        this.linkedDevices.add(new Link(device, 0));
-        buildRoutes();
+    public void addLinkedDevice(Device device, int roundTripTime) {
+        this.linkedDevices.add(new Link(device, roundTripTime));
     }
 
-    private void buildRoutes() {
-        routingTable.clear();
+    public void buildRoutes() {
         for (Router r : allRouters) {
-            routingTable.add(findBestPathTo(r));
+            if(r != this) {
+                routingTable.add(findBestPathTo(r));
+            }
         }
     }
 
     private Route findBestPathTo(Router r) {
-        if (isLinkedDevice(r)) {
-            return new Route(r, r);
-        }
-        //Dijisktra here to find next hop
-        return new Route(r, r);
+        Router nextHop = routingStrategy.findBestNextHop(this, r);
+        return new Route(r, nextHop);
     }
 
-    private boolean isLinkedDevice(Device device) {
-        for (Link l : linkedDevices) {
-            if (l.getLinkedDevice() == device) {
-                return true;
-            }
-        }
-        return false;
+    public ArrayList<Link> getLinkedDevices() {
+        return linkedDevices;
     }
 }
