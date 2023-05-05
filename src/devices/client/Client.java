@@ -6,7 +6,6 @@ import devices.client.handlers.received.*;
 import devices.client.handlers.sent.*;
 import events.Event;
 import events.EventWithDirectSourceDestination;
-import events.OnEvent;
 import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.*;
@@ -40,14 +39,13 @@ public class Client extends Device {
             return;
         }
 
-        boolean shouldSend = source.processSentEvent(networkLink.getLinkedDevice(), event);
-        if (shouldSend) {
-            if(DeviceUtil.isInSameNetwork(this, event.getDestination())) {
-                sendEventToDevice(networkLink.getLinkedDevice(), event);
-            } else {
-                sendEventToDevice(getDefaultGateway(), event);
-
-            }
+        boolean shouldSend;
+        if (DeviceUtil.isInSameNetwork(this, event.getDestination())) {
+            shouldSend = source.processSentEvent(networkLink.getLinkedDevice(), event);
+            if (shouldSend) sendEventToDevice(networkLink.getLinkedDevice(), event);
+        } else {
+            shouldSend = source.processSentEvent(getDefaultGateway(), event);
+            if (shouldSend) sendEventToDevice(getDefaultGateway(), event);
         }
     }
 

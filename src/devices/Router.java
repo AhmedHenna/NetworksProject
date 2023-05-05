@@ -48,8 +48,10 @@ public class Router extends Device {
     public void sendEvent(Event event) {
         Router toRouter = findRouterForDevice(event.getDestination());
         if (toRouter == this) {
+            processSentEvent(networkLink.getLinkedDevice(), event);
             sendEventToDevice(networkLink.getLinkedDevice(), event);
         } else if(toRouter != null) {
+            processSentEvent(toRouter, event);
             sendEventToDevice(getNextHopForDestination(toRouter), event);
         }
     }

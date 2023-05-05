@@ -5,6 +5,11 @@ import model.IpAddress;
 public class DeviceUtil {
 
     public static boolean isInSameNetwork(Device device1, Device device2) {
+
+        // When device is null, then event meant for broadcast
+        if(device2 == null || device1 == null){
+            return true;
+        }
         IpAddress device1Ip = device1.getIpAddress();
         IpAddress device2Ip = device2.getIpAddress();
         IpAddress device1Subnet = device1.getSubnetMask();
