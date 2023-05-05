@@ -7,7 +7,9 @@ public class TcpPayload extends TransportPayload {
     private final int acknowledgmentNumber;
     private final ArrayList<Flag> flags;
 
-    public TcpPayload(int sourcePort, int destinationPort, byte[] payload, int sequenceNumber, int acknowledgmentNumber, ArrayList<Flag> flags, String checksum) {
+    public TcpPayload(int sourcePort, int destinationPort, byte[] payload, int sequenceNumber, int acknowledgmentNumber,
+                      ArrayList<Flag> flags, String checksum
+    ) {
         super(sourcePort, destinationPort, payload, checksum);
         this.sequenceNumber = sequenceNumber;
         this.acknowledgmentNumber = acknowledgmentNumber;
@@ -27,11 +29,6 @@ public class TcpPayload extends TransportPayload {
     }
 
     public enum Flag {
-        ACK,
-        URG,
-        PSH,
-        RST,
-        SYN,
-        FIN
+        ACK, URG, PSH, RST, SYN, FIN
     }
 }

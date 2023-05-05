@@ -14,7 +14,8 @@ public class ClientReceivedArpResponseEventHandler extends ClientEventHandler {
         IpPayload ipPayload = packet.getIpPayload();
         if (client.pendingArpRequests.contains(ipPayload.getSourceIp())) {
             client.pendingArpRequests.remove(ipPayload.getSourceIp());
-            client.ipAddressMacMappings.add(new IpAddressMacMapping(ipPayload.getSourceIp(), packet.getSourceMacAddress()));
+            client.ipAddressMacMappings.add(
+                    new IpAddressMacMapping(ipPayload.getSourceIp(), packet.getSourceMacAddress()));
         }
     }
 }

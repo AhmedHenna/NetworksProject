@@ -15,11 +15,16 @@ public class ClientReceivedTcpFinEventHandler extends ClientEventHandler {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
         if (ClientUtil.hasTcpConnection(client, currentConnection)) {
-            TcpFinAckEvent tcpFinAckEvent = new TcpFinAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+            TcpFinAckEvent tcpFinAckEvent =
+                    new TcpFinAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
+                            tcpPayload.getSourcePort()
+                    );
             client.sendEvent(tcpFinAckEvent);
 
             if (!ClientUtil.hasInitiatedFin(client, currentConnection)) {
-                TcpFinEvent tcpFinEvent = new TcpFinEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+                TcpFinEvent tcpFinEvent = new TcpFinEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
+                        tcpPayload.getSourcePort()
+                );
                 client.sendEvent(tcpFinEvent);
                 client.tcpConnectionsWithFinReceived.add(currentConnection);
             }

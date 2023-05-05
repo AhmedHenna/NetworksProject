@@ -25,7 +25,9 @@ public class ClientUtil {
     public static TcpConnection getSendingTcpConnection(Packet packet) {
         IpPayload ipPayload = packet.getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) ipPayload.getTransportPayload();
-        return new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+        return new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(),
+                tcpPayload.getSourcePort()
+        );
     }
 
     public static TcpConnection getReceivingTcpConnection(Packet packet) {
@@ -37,10 +39,9 @@ public class ClientUtil {
 
     public static TcpCurrentSendingState getCurrentSendingState(Client client, TcpConnection connection) {
         for (TcpCurrentSendingState s : client.currentSendingStates) {
-            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp())
-                    && s.getConnection().getDestinationPort() == connection.getDestinationPort()
-                    && s.getConnection().getSourcePort() == connection.getSourcePort()
-            ) {
+            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp()) && s.getConnection()
+                    .getDestinationPort() == connection.getDestinationPort() && s.getConnection()
+                    .getSourcePort() == connection.getSourcePort()) {
                 return s;
             }
         }
@@ -49,10 +50,9 @@ public class ClientUtil {
 
     public static TcpCurrentReceivingState getCurrentReceivingState(Client client, TcpConnection connection) {
         for (TcpCurrentReceivingState s : client.currentReceivingStates) {
-            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp())
-                    && s.getConnection().getDestinationPort() == connection.getDestinationPort()
-                    && s.getConnection().getSourcePort() == connection.getSourcePort()
-            ) {
+            if (s.getConnection().getDestinationIp().equals(connection.getDestinationIp()) && s.getConnection()
+                    .getDestinationPort() == connection.getDestinationPort() && s.getConnection()
+                    .getSourcePort() == connection.getSourcePort()) {
                 return s;
             }
         }
@@ -78,10 +78,8 @@ public class ClientUtil {
 
     public static boolean connectionsContain(ArrayList<TcpConnection> connections, TcpConnection connection) {
         for (TcpConnection c : connections) {
-            if (c.getDestinationIp().equals(connection.getDestinationIp())
-                    && c.getDestinationPort() == connection.getDestinationPort()
-                    && c.getSourcePort() == connection.getSourcePort()
-            ) {
+            if (c.getDestinationIp()
+                    .equals(connection.getDestinationIp()) && c.getDestinationPort() == connection.getDestinationPort() && c.getSourcePort() == connection.getSourcePort()) {
                 return true;
             }
         }
@@ -89,10 +87,8 @@ public class ClientUtil {
     }
 
     public static void deleteFromConnections(ArrayList<TcpConnection> connections, TcpConnection connection) {
-        connections.removeIf(c -> c.getDestinationIp().equals(connection.getDestinationIp())
-                && c.getDestinationPort() == connection.getDestinationPort()
-                && c.getSourcePort() == connection.getSourcePort()
-        );
+        connections.removeIf(c -> c.getDestinationIp()
+                .equals(connection.getDestinationIp()) && c.getDestinationPort() == connection.getDestinationPort() && c.getSourcePort() == connection.getSourcePort());
 
     }
 

@@ -14,7 +14,9 @@ public class ClientReceivedTcpSynAckEventHandler extends ClientEventHandler {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
         TcpConnection currentConnection = ClientUtil.getReceivingTcpConnection(event.getPacket());
         if (ClientUtil.hasSentSyn(client, currentConnection)) {
-            TcpAckEvent tcpAckEvent = new TcpAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+            TcpAckEvent tcpAckEvent = new TcpAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
+                    tcpPayload.getSourcePort()
+            );
             client.sendEvent(tcpAckEvent);
         }
     }

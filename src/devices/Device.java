@@ -30,7 +30,9 @@ public abstract class Device extends Thread {
     protected ArrayList<OnEvent> onReceivedEventListeners = new ArrayList<>();
 
 
-    public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
+    public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
+                  Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue
+    ) {
         super(name);
         this.macAddress = macAddress;
         this.ipAddress = ipAddress;
@@ -91,9 +93,8 @@ public abstract class Device extends Thread {
 
     protected boolean currentIsSource(Device source) {
         if (source != this) {
-            System.out.println("ERROR: Cannot send event where source device is different from current" +
-                    "\n Current IP: " + ipAddress + " Current MAC: " + macAddress +
-                    "\n Source IP: " + source.ipAddress + " Dest MAC: " + source.macAddress);
+            System.out.println(
+                    "ERROR: Cannot send event where source device is different from current" + "\n Current IP: " + ipAddress + " Current MAC: " + macAddress + "\n Source IP: " + source.ipAddress + " Dest MAC: " + source.macAddress);
             return false;
         }
         return true;
@@ -101,12 +102,18 @@ public abstract class Device extends Thread {
 
     public void logSentEvent(Event event, Device destination) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Sent", 8), toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("To", 4), toLength(destination.toString(), 10));
+        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Sent", 8),
+                toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("To", 4),
+                toLength(destination.toString(), 10)
+        );
     }
 
     public void logReceivedEvent(Event event, Device source) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Received", 8), toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("From", 4), toLength(source.toString(), 10));
+        log(dateFormat.format(new Date(event.getTimestampMillis())), toLength("Received", 8),
+                toLength(event.getClass().toString().replace("class events.", ""), 30), toLength("From", 4),
+                toLength(source.toString(), 10)
+        );
     }
 
 
@@ -148,7 +155,9 @@ public abstract class Device extends Thread {
                 try {
                     wait();
                     EventWithDirectSourceDestination eventWithDirectSourceDestination = eventQueue.take();
-                    processReceivedEvent(eventWithDirectSourceDestination.getSource(), eventWithDirectSourceDestination.getEvent());
+                    processReceivedEvent(eventWithDirectSourceDestination.getSource(),
+                            eventWithDirectSourceDestination.getEvent()
+                    );
 
                 } catch (InterruptedException e) {
                     System.out.println("Thread interrupted: " + getName());

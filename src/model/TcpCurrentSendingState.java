@@ -15,7 +15,10 @@ public class TcpCurrentSendingState {
 
     private final int lastSequenceNumber;
 
-    public TcpCurrentSendingState(TcpConnection connection, Queue<TcpSendDataSegmentEvent> pendingSendDataEvents, HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastSequenceNumber, Set<Integer> acknowledgedNumbers) {
+    public TcpCurrentSendingState(TcpConnection connection, Queue<TcpSendDataSegmentEvent> pendingSendDataEvents,
+                                  HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastSequenceNumber,
+                                  Set<Integer> acknowledgedNumbers
+    ) {
         this.connection = connection;
         this.pendingSendDataEvents = pendingSendDataEvents;
         this.sentDataEvents = sentDataEvents;

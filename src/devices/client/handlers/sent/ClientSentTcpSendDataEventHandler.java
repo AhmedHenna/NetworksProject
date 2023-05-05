@@ -28,7 +28,11 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
             int sequenceNumber = 1;
             for (int i = 0; i < segments.length; i++) {
                 byte[] segment = segments[i];
-                TcpSendDataSegmentEvent sendDataSegmentEvent = new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment, tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber, new String(segment), System.currentTimeMillis(), event.getWindowSize());
+                TcpSendDataSegmentEvent sendDataSegmentEvent =
+                        new TcpSendDataSegmentEvent(event.getSource(), event.getDestination(), segment,
+                                tcpPayload.getSourcePort(), tcpPayload.getDestinationPort(), sequenceNumber,
+                                new String(segment), System.currentTimeMillis(), event.getWindowSize()
+                        );
                 sendDataSegmentEvents.add(sendDataSegmentEvent);
                 if (i != segments.length - 1) {
                     sequenceNumber += segment.length;
@@ -36,7 +40,10 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
             }
 
 
-            TcpCurrentSendingState currentSendingState = new TcpCurrentSendingState(currentConnection, sendDataSegmentEvents, sentDataSegmentEvent, sequenceNumber, new HashSet<>());
+            TcpCurrentSendingState currentSendingState =
+                    new TcpCurrentSendingState(currentConnection, sendDataSegmentEvents, sentDataSegmentEvent,
+                            sequenceNumber, new HashSet<>()
+                    );
             client.currentSendingStates.add(currentSendingState);
 
             for (int i = 0; i < event.getWindowSize(); i++) {
@@ -63,7 +70,9 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
             segments[i] = Arrays.copyOfRange(data, i * Device.MSS, i * Device.MSS + Device.MSS);
         }
         if (lastArrayLength > 0) {
-            segments[numberOfSegments - 1] = Arrays.copyOfRange(data, (numberOfSegments - 1) * Device.MSS, (numberOfSegments - 1) * Device.MSS + lastArrayLength);
+            segments[numberOfSegments - 1] = Arrays.copyOfRange(data, (numberOfSegments - 1) * Device.MSS,
+                    (numberOfSegments - 1) * Device.MSS + lastArrayLength
+            );
         }
         return segments;
     }

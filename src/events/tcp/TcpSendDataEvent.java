@@ -10,7 +10,9 @@ public class TcpSendDataEvent extends TcpEvent {
 
     private final int windowSize;
 
-    public TcpSendDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort, int windowSize) {
+    public TcpSendDataEvent(Device source, Device destination, byte[] data, int sourcePort, int destinationPort,
+                            int windowSize
+    ) {
         super(source, destination, sourcePort, destinationPort);
         this.data = data;
         this.windowSize = windowSize;

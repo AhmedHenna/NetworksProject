@@ -13,7 +13,9 @@ public class UdpSendDataEvent extends Event {
     private final int destinationPort;
 
 
-    public UdpSendDataEvent(Device source, Device destination, int sourcePort, int destinationPort, byte[] data, String checksum) {
+    public UdpSendDataEvent(Device source, Device destination, int sourcePort, int destinationPort, byte[] data,
+                            String checksum
+    ) {
         super(source, destination);
         this.data = data;
         this.checksum = checksum;

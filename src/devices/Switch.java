@@ -3,7 +3,6 @@ package devices;
 import events.Event;
 import events.EventWithDirectSourceDestination;
 import events.OnEvent;
-import events.SendEvent;
 import model.IpAddress;
 import model.Link;
 
@@ -14,7 +13,9 @@ public class Switch extends Device {
 
     private final ArrayList<Link> linkedDevices = new ArrayList<>();
 
-    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
+    public Switch(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
+                  BlockingQueue<EventWithDirectSourceDestination> eventQueue
+    ) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, null, eventQueue);
     }
 
@@ -53,7 +54,7 @@ public class Switch extends Device {
     @Override
     public void processReceivedEvent(Device source, Event event) {
         //logReceivedEvent(event, source);
-        for(OnEvent onReceivedEvent: onReceivedEventListeners){
+        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
             onReceivedEvent.onEvent(event);
         }
         if (event.getPacket().getDestinationMacAddress().equals("ff:ff:ff:ff:ff:ff")) {
@@ -66,7 +67,7 @@ public class Switch extends Device {
     @Override
     public boolean processSentEvent(Device destination, Event event) {
         //logSentEvent(event, destination);
-        for(OnEvent onSentEvent: onSentEventListeners){
+        for (OnEvent onSentEvent : onSentEventListeners) {
             onSentEvent.onEvent(event);
         }
         return true;

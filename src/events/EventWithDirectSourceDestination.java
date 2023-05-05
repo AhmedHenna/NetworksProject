@@ -28,6 +28,8 @@ public class EventWithDirectSourceDestination implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        return Long.compare(event.getTimestampMillis(), ((EventWithDirectSourceDestination) o).event.getTimestampMillis());
+        return Long.compare(event.getTimestampMillis(),
+                ((EventWithDirectSourceDestination) o).event.getTimestampMillis()
+        );
     }
 }

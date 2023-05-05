@@ -12,6 +12,9 @@ public class ClientSentTcpSynEventHandler extends ClientEventHandler {
     public void processEvent(Client client, Event event) {
         IpPayload ipPayload = event.getPacket().getIpPayload();
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
-        client.tcpConnectionsWithSynSent.add(new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort()));
+        client.tcpConnectionsWithSynSent.add(
+                new TcpConnection(ipPayload.getDestinationIp(), tcpPayload.getDestinationPort(),
+                        tcpPayload.getSourcePort()
+                ));
     }
 }

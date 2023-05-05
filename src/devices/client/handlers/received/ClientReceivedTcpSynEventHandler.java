@@ -11,7 +11,9 @@ public class ClientReceivedTcpSynEventHandler extends ClientEventHandler {
     @Override
     public void processEvent(Client client, Event event) {
         TcpPayload tcpPayload = (TcpPayload) event.getPacket().getTransportPayload();
-        TcpSynAckEvent tcpSynAckEvent = new TcpSynAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(), tcpPayload.getSourcePort());
+        TcpSynAckEvent tcpSynAckEvent = new TcpSynAckEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
+                tcpPayload.getSourcePort()
+        );
         client.sendEvent(tcpSynAckEvent);
     }
 }

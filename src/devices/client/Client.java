@@ -6,7 +6,6 @@ import devices.client.handlers.sent.*;
 import events.Event;
 import events.EventWithDirectSourceDestination;
 import events.OnEvent;
-import events.SendEvent;
 import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.*;
@@ -27,7 +26,9 @@ public class Client extends Device {
     public final ArrayList<TcpCurrentReceivingState> currentReceivingStates = new ArrayList<>();
 
 
-    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway, Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
+    public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
+                  Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue
+    ) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink, eventQueue);
     }
 
@@ -63,7 +64,7 @@ public class Client extends Device {
             shouldSend = false;
         }
 
-        for(OnEvent onSentEvent: onSentEventListeners){
+        for (OnEvent onSentEvent : onSentEventListeners) {
             onSentEvent.onEvent(event);
         }
         return shouldSend;
@@ -91,7 +92,7 @@ public class Client extends Device {
         } else if (event instanceof TcpSendDataSegmentEvent) {
             new ClientReceivedTcpSendDataSegmentEventHandler().processEvent(this, event);
         }
-        for(OnEvent onReceivedEvent: onReceivedEventListeners){
+        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
             onReceivedEvent.onEvent(event);
         }
     }
