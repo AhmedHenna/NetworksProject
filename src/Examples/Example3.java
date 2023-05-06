@@ -1,52 +1,53 @@
+package Examples;
+
 import devices.Device;
 import devices.Router;
 import devices.Switch;
 import devices.client.Client;
 import events.EventWithDirectSourceDestination;
+import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.TcpAckEvent;
 import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;
-import routing_strategy.BellmanFordRoutingStrategy;
 import routing_strategy.DijkstraRoutingStrategy;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class Main {
+public class Example3 {
+
 
     private static final BlockingQueue<EventWithDirectSourceDestination> eventQueue = new PriorityBlockingQueue<>();
-
 
     public static void main(String[] args) {
         ArrayList<Router> routers = new ArrayList<>();
         IpAddress subnetMask = new IpAddress(255, 255, 255, 0);
 
-        Switch switchA = new Switch("Switch A", randomMac(), null, null, null, eventQueue);
+        Switch switchA = new Switch("Switch A", Util.randomMac(), null, null, null, eventQueue);
 
-        Switch switchB = new Switch("Switch B", randomMac(), null, null, null, eventQueue);
+        Switch switchB = new Switch("Switch B", Util.randomMac(), null, null, null, eventQueue);
 
-        Switch switchC = new Switch("Switch C", randomMac(), null, null, null, eventQueue);
+        Switch switchC = new Switch("Switch C", Util.randomMac(), null, null, null, eventQueue);
 
-        Switch switchD = new Switch("Switch D", randomMac(), null, null, null, eventQueue);
+        Switch switchD = new Switch("Switch D", Util.randomMac(), null, null, null, eventQueue);
 
-        Router routerA = new Router("Router A", randomMac(), new IpAddress(192, 168, 1, 1), subnetMask, null,
+        Router routerA = new Router("Router A", Util.randomMac(), new IpAddress(192, 168, 1, 1), subnetMask, null,
                 new Link(switchA, 0), eventQueue, routers
         );
 
-        Router routerB = new Router("Router B", randomMac(), new IpAddress(192, 168, 2, 1), subnetMask, null,
+        Router routerB = new Router("Router B", Util.randomMac(), new IpAddress(192, 168, 2, 1), subnetMask, null,
                 new Link(switchB, 0), eventQueue, routers
         );
 
-        Router routerC = new Router("Router C", randomMac(), new IpAddress(192, 168, 3, 1), subnetMask, null,
+        Router routerC = new Router("Router C", Util.randomMac(), new IpAddress(192, 168, 3, 1), subnetMask, null,
                 new Link(switchC, 0), eventQueue, routers
         );
 
-        Router routerD = new Router("Router D", randomMac(), new IpAddress(192, 168, 4, 1), subnetMask, null,
+        Router routerD = new Router("Router D", Util.randomMac(), new IpAddress(192, 168, 4, 1), subnetMask, null,
                 new Link(switchD, 0), eventQueue, routers
         );
 
@@ -79,19 +80,19 @@ public class Main {
         routerC.buildRoutes();
         routerD.buildRoutes();
 
-        Client clientA = new Client("Client A", randomMac(), new IpAddress(192, 168, 1, 2), subnetMask, routerA,
+        Client clientA = new Client("Client A", Util.randomMac(), new IpAddress(192, 168, 1, 2), subnetMask, routerA,
                 new Link(switchA, 0), eventQueue
         );
 
-        Client clientB = new Client("Client B", randomMac(), new IpAddress(192, 168, 2, 3), subnetMask, routerB,
+        Client clientB = new Client("Client B", Util.randomMac(), new IpAddress(192, 168, 2, 3), subnetMask, routerB,
                 new Link(switchB, 0), eventQueue
         );
 
-        Client clientC = new Client("Client C", randomMac(), new IpAddress(192, 168, 3, 3), subnetMask, routerC,
+        Client clientC = new Client("Client C", Util.randomMac(), new IpAddress(192, 168, 3, 3), subnetMask, routerC,
                 new Link(switchC, 0), eventQueue
         );
 
-        Client clientD = new Client("Client D", randomMac(), new IpAddress(192, 168, 4, 3), subnetMask, routerD,
+        Client clientD = new Client("Client D", Util.randomMac(), new IpAddress(192, 168, 4, 3), subnetMask, routerD,
                 new Link(switchD, 0), eventQueue
         );
 
@@ -99,6 +100,7 @@ public class Main {
         switchB.addLinkedDevice(clientB);
         switchC.addLinkedDevice(clientC);
         switchD.addLinkedDevice(clientD);
+
 
 
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientD, 56, 23);
@@ -110,13 +112,14 @@ public class Main {
         clientA.addOnReceivedEventListener(event -> {
             if (event instanceof ArpResponseEvent) {
                 clientA.sendEvent(tcpSynEvent);
-            } else if (event instanceof TcpAckEvent) {
+            }
+            if (event instanceof TcpAckEvent) {
                 clientA.sendEvent(sendDataEvent);
             }
         });
         clientA.addOnSentEventListener(event -> {
             if (event instanceof TcpAckEvent) {
-               clientA.sendEvent(sendDataEvent);
+                clientA.sendEvent(sendDataEvent);
             }
         });
 
@@ -139,39 +142,7 @@ public class Main {
         clientA.sendEvent(tcpSynEvent);
 
 
-        listenForQueueUpdates();
+        Util.listenForQueueUpdates(eventQueue);
     }
 
-
-    private static void listenForQueueUpdates() {
-        while (true) {
-            EventWithDirectSourceDestination peeked = eventQueue.peek();
-            if (peeked != null) {
-                synchronized (peeked.getDestination()) {
-                    peeked.getDestination().notify();
-                }
-            }
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                System.out.println("Interrupted queue listener");
-                break;
-            }
-        }
-    }
-
-    private static final ArrayList<String> usedMacs = new ArrayList<>();
-
-    public static String randomMac() {
-        Random random = new Random();
-        String[] mac = {String.format("%02x", random.nextInt(0xff)), String.format("%02x", random.nextInt(0xff)),
-                String.format("%02x", random.nextInt(0xff)), String.format("%02x", random.nextInt(0xff)),
-                String.format("%02x", random.nextInt(0xff)), String.format("%02x", random.nextInt(0xff))};
-        String address = String.join(":", mac);
-        if (usedMacs.contains(address)) {
-            return randomMac();
-        }
-        usedMacs.add(address);
-        return address;
-    }
 }

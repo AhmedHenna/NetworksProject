@@ -29,7 +29,7 @@ public class ClientReSender extends Thread {
                 for (Map.Entry<Integer, TcpSendDataSegmentEvent> sentEvent : sentEvents.entrySet()) {
                     int ackNumberOfEvent = sentEvent.getKey() + sentEvent.getValue().getData().length;
 
-                    if (resentEvents < windowSize && !ackNumbers.contains(ackNumberOfEvent) && sentEvent.getValue().getSentAt() + Device.SENT_SEGMENT_TIMEOUT < System.currentTimeMillis()) {
+                    if (resentEvents < windowSize && !ackNumbers.contains(ackNumberOfEvent) && sentEvent.getValue().getSentAt() + Device.sentSegmentTimeout < System.currentTimeMillis()) {
                         sentEvent.getValue().setSentAt(System.currentTimeMillis());
                         sentEvent.getValue().updateTimestamp();
                         sentEvents.put(sentEvent.getValue().getSequenceNumber(), sentEvent.getValue());

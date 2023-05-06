@@ -20,7 +20,11 @@ public abstract class Device extends Thread {
 
     //Number of event allowed at a given point
     public static int INITIAL_WINDOW_SIZE = 3;
-    public static int SENT_SEGMENT_TIMEOUT = 15000;
+    public static int sentSegmentTimeout = 15000;
+
+    public static void setTimeout(int timeout){
+        sentSegmentTimeout = timeout;
+    }
     protected final Link networkLink;
     private final String macAddress;
     private final IpAddress ipAddress;
@@ -146,7 +150,7 @@ public abstract class Device extends Thread {
         boolean isReceivedEvent = type.toLowerCase().startsWith("r");
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
         ArrayList<String> logs = new ArrayList<>();
-        logs.add(dateFormat.format(isReceivedEvent ? new Date(System.currentTimeMillis()) : new Date(event.getTimestampMillis())));
+//        logs.add(dateFormat.format(isReceivedEvent ? new Date(System.currentTimeMillis()) : new Date(event.getTimestampMillis())));
         logs.add(toLength(isReceivedEvent ? "Received" : "Sent", 8));
         logs.add(toLength(event.getClass().toString().replace("class events.", ""), 30));
         logs.add(toLength(isReceivedEvent ? "From" : "To", 4));
