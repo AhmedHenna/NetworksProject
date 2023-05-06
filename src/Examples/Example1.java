@@ -41,8 +41,8 @@ public class Example1 {
 
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientB, 56, 23);
         TcpSendDataEvent sendDataEvent = new TcpSendDataEvent(clientA, clientB,
-                "Just testing out this long message to make sure that evreything works".getBytes(),
-                56, 23, Device.INITIAL_WINDOW_SIZE
+                "Just testing out this long message to make sure that evreything works".getBytes(), 56, 23,
+                Device.INITIAL_WINDOW_SIZE
         );
 
         clientA.addOnReceivedEventListener(event -> {

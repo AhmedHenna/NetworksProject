@@ -2,13 +2,10 @@ package routing_strategy;
 
 import devices.Router;
 import model.Link;
-import model.Route;
 
 import java.util.Set;
 
 public abstract class RoutingStrategy {
-    public abstract Router findBestNextHop(Router from, Router to);
-
     protected static void fillWithAllRoutersFrom(Router r, Set<Router> routers) {
         routers.add(r);
         for (Link l : r.getLinkedDevices()) {
@@ -18,4 +15,6 @@ public abstract class RoutingStrategy {
             }
         }
     }
+
+    public abstract Router findBestNextHop(Router from, Router to);
 }

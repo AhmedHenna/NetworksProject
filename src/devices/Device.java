@@ -21,10 +21,6 @@ public abstract class Device extends Thread {
     //Number of event allowed at a given point
     public static int INITIAL_WINDOW_SIZE = 3;
     public static int sentSegmentTimeout = 15000;
-
-    public static void setTimeout(int timeout){
-        sentSegmentTimeout = timeout;
-    }
     protected final Link networkLink;
     private final String macAddress;
     private final IpAddress ipAddress;
@@ -33,8 +29,6 @@ public abstract class Device extends Thread {
     private final BlockingQueue<EventWithDirectSourceDestination> eventQueue;
     protected ArrayList<OnEvent> onSentEventListeners = new ArrayList<>();
     protected ArrayList<OnEvent> onReceivedEventListeners = new ArrayList<>();
-
-
     public Device(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
                   Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue
     ) {
@@ -45,6 +39,10 @@ public abstract class Device extends Thread {
         this.defaultGateway = defaultGateway;
         this.networkLink = networkLink;
         this.eventQueue = eventQueue;
+    }
+
+    public static void setTimeout(int timeout) {
+        sentSegmentTimeout = timeout;
     }
 
     public String getMacAddress() {
@@ -97,7 +95,7 @@ public abstract class Device extends Thread {
 
     public abstract void sendEvent(Event event);
 
-    protected void pauseBeforeSending(Event event){
+    protected void pauseBeforeSending(Event event) {
         try {
             // Sleep to leave enough time between events to ensure proper ordering
             sleep(50);
@@ -108,7 +106,7 @@ public abstract class Device extends Thread {
         }
     }
 
-    protected void pauseBeforeReceiving(){
+    protected void pauseBeforeReceiving() {
         try {
             // Sleep to leave enough time between events to ensure proper ordering
             sleep(50);

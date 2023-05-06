@@ -55,7 +55,8 @@ public class DijkstraRoutingStrategy extends RoutingStrategy {
 
             for (Link l : smallest.getLinkedDevices()) {
                 Router current = (Router) l.getLinkedDevice();
-                if (roundTripTime.get(current) != null && roundTripTime.get(smallest) + l.getRoundTripTime() < roundTripTime.get(current)) {
+                if (roundTripTime.get(current) != null && roundTripTime.get(
+                        smallest) + l.getRoundTripTime() < roundTripTime.get(current)) {
                     roundTripTime.put(current, roundTripTime.get(smallest) + l.getRoundTripTime());
                     parents.put(current, smallest);
                 }
@@ -77,7 +78,6 @@ public class DijkstraRoutingStrategy extends RoutingStrategy {
         path = correctPath.toArray(path);
         return path;
     }
-
 
 
 }

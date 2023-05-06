@@ -7,7 +7,7 @@ public class DeviceUtil {
     public static boolean isInSameNetwork(Device device1, Device device2) {
 
         // When device is null, then event meant for broadcast
-        if(device2 == null || device1 == null){
+        if (device2 == null || device1 == null) {
             return true;
         }
         IpAddress device1Ip = device1.getIpAddress();
@@ -32,9 +32,7 @@ public class DeviceUtil {
                 }
             }
             if (device1Subnet.getFourthChunk() == 255) {
-                if (device1Ip.getFourthChunk() != device2Ip.getFourthChunk()) {
-                    return false;
-                }
+                return device1Ip.getFourthChunk() == device2Ip.getFourthChunk();
             }
 
             return true;

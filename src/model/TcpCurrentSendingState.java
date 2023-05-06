@@ -1,9 +1,7 @@
 package model;
 
-import devices.Device;
 import events.tcp.TcpSendDataSegmentEvent;
 
-import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;

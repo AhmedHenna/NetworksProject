@@ -15,9 +15,8 @@ import java.util.concurrent.BlockingQueue;
 public class Router extends Device {
 
     public final ArrayList<Route> routingTable = new ArrayList<>();
-    private final ArrayList<Link> linkedDevices = new ArrayList<>();
     public final ArrayList<Router> allRouters;
-
+    private final ArrayList<Link> linkedDevices = new ArrayList<>();
     private RoutingStrategy routingStrategy = new DijkstraRoutingStrategy();
 
 
@@ -56,25 +55,25 @@ public class Router extends Device {
         if (toRouter == this) {
             processSentEvent(networkLink.getLinkedDevice(), event);
             sendEventToDevice(networkLink.getLinkedDevice(), event);
-        } else if(toRouter != null) {
+        } else if (toRouter != null) {
             Router nextHop = getNextHopForDestination(toRouter);
             processSentEvent(nextHop, event);
             sendEventToDevice(nextHop, event);
         }
     }
 
-    private Router findRouterForDevice(Device device){
-        for(Router router : allRouters){
-            if(DeviceUtil.isInSameNetwork(router, device)){
+    private Router findRouterForDevice(Device device) {
+        for (Router router : allRouters) {
+            if (DeviceUtil.isInSameNetwork(router, device)) {
                 return router;
             }
         }
         return null;
     }
 
-    private Router getNextHopForDestination(Router destination){
-        for(Route route: routingTable){
-            if(route.getDestination() == destination){
+    private Router getNextHopForDestination(Router destination) {
+        for (Route route : routingTable) {
+            if (route.getDestination() == destination) {
                 return route.getNextHop();
             }
         }
@@ -91,7 +90,7 @@ public class Router extends Device {
 
     public void buildRoutes() {
         for (Router r : allRouters) {
-            if(r != this) {
+            if (r != this) {
                 routingTable.add(findBestPathTo(r));
             }
         }

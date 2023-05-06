@@ -14,7 +14,7 @@ public class TcpAckDataSegmentEvent extends TcpDataSegmentEvent {
     @Override
     public ArrayList<String> getAdditionalLogs() {
         ArrayList<String> additional = super.getAdditionalLogs();
-        additional.add(source.toLength("ACK:"+ getAcknowledgmentNumber(), 7));
+        additional.add(source.toLength("ACK:" + getAcknowledgmentNumber(), 7));
         return additional;
     }
 }

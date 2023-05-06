@@ -32,7 +32,8 @@ public class BellmanFordRoutingStrategy extends RoutingStrategy {
                 for (Link link : router.getLinkedDevices()) {
                     Router neighbor = (Router) link.getLinkedDevice();
                     int weight = link.getRoundTripTime();
-                    if (distance.get(router) != Integer.MAX_VALUE && distance.get(router) + weight < distance.get(neighbor)) {
+                    if (distance.get(router) != Integer.MAX_VALUE && distance.get(router) + weight < distance.get(
+                            neighbor)) {
                         distance.put(neighbor, distance.get(router) + weight);
                         predecessor.put(neighbor, router);
                     }
@@ -45,7 +46,8 @@ public class BellmanFordRoutingStrategy extends RoutingStrategy {
             for (Link link : router.getLinkedDevices()) {
                 Router neighbor = (Router) link.getLinkedDevice();
                 int weight = link.getRoundTripTime();
-                if (distance.get(router) != Integer.MAX_VALUE && distance.get(router) + weight < distance.get(neighbor)) {
+                if (distance.get(router) != Integer.MAX_VALUE && distance.get(router) + weight < distance.get(
+                        neighbor)) {
                     throw new RuntimeException("Graph contains negative weight cycle");
                 }
             }

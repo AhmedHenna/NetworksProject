@@ -4,7 +4,10 @@ import devices.Device;
 import events.tcp.TcpSendDataSegmentEvent;
 import model.TcpCurrentSendingState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class ClientReSender extends Thread {
 
@@ -20,7 +23,7 @@ public class ClientReSender extends Thread {
     public void run() {
         super.run();
         while (true) {
-            for(TcpCurrentSendingState currentSendingState: currentSendingStates) {
+            for (TcpCurrentSendingState currentSendingState : currentSendingStates) {
                 TreeMap<Integer, TcpSendDataSegmentEvent> sentEvents = currentSendingState.getSentDataEvents();
                 Set<Integer> ackNumbers = currentSendingState.getAcknowledgedNumbers();
                 int windowSize = currentSendingState.getWindowSizeAvailableForReSender();
@@ -29,7 +32,8 @@ public class ClientReSender extends Thread {
                 for (Map.Entry<Integer, TcpSendDataSegmentEvent> sentEvent : sentEvents.entrySet()) {
                     int ackNumberOfEvent = sentEvent.getKey() + sentEvent.getValue().getData().length;
 
-                    if (resentEvents < windowSize && !ackNumbers.contains(ackNumberOfEvent) && sentEvent.getValue().getSentAt() + Device.sentSegmentTimeout < System.currentTimeMillis()) {
+                    if (resentEvents < windowSize && !ackNumbers.contains(ackNumberOfEvent) && sentEvent.getValue()
+                            .getSentAt() + Device.sentSegmentTimeout < System.currentTimeMillis()) {
                         sentEvent.getValue().setSentAt(System.currentTimeMillis());
                         sentEvent.getValue().updateTimestamp();
                         sentEvents.put(sentEvent.getValue().getSequenceNumber(), sentEvent.getValue());

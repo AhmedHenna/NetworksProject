@@ -78,7 +78,7 @@ public class Client extends Device {
     @Override
     public void processReceivedEvent(Device source, Event event) {
         pauseBeforeReceiving();
-        if(event.getDestination() != this){
+        if (event.getDestination() != this) {
             return; //Ignore any received event that is not meant for this client
         }
         logReceivedEvent(event, source);

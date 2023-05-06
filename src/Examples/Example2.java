@@ -5,8 +5,6 @@ import devices.Router;
 import devices.Switch;
 import devices.client.Client;
 import events.EventWithDirectSourceDestination;
-import events.arp.ArpRequestEvent;
-import events.arp.ArpResponseEvent;
 import events.tcp.TcpAckEvent;
 import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;

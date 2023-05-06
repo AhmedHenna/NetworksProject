@@ -11,7 +11,6 @@ import model.TcpConnection;
 import model.TcpCurrentReceivingState;
 import model.packet.transport.TcpPayload;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -29,7 +28,7 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
             client.currentReceivingStates.add(currentReceivingState);
         }
 
-        if(randomIsSegmentDropped()){
+        if (randomIsSegmentDropped()) {
             client.log("Simulated segment dropped, not acknowledging");
             return;
         }
@@ -43,7 +42,7 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
 
             if (isRandomNotValidChecksum(data, event.getChecksum())) {
                 client.log("Invalid checksum detected");
-                if(currentReceivedData.isEmpty()){
+                if (currentReceivedData.isEmpty()) {
                     ackNumber = sequenceNumber;
                 } else {
                     int lastSequenceNumber = currentReceivedData.lastKey();
@@ -51,17 +50,17 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
                     ackNumber = lastSequenceNumber + lastData.length;
                 }
             } else {
-                if(currentReceivedData.isEmpty()){
-                    if(ackNumber == Device.MSS + 1){
-                        currentReceivedData.put(sequenceNumber,data);
+                if (currentReceivedData.isEmpty()) {
+                    if (ackNumber == Device.MSS + 1) {
+                        currentReceivedData.put(sequenceNumber, data);
                     } else {
                         ackNumber = sequenceNumber;
                     }
                 } else {
                     int lastSequenceNumber = currentReceivedData.lastKey();
                     byte[] lastData = currentReceivedData.lastEntry().getValue();
-                    if(sequenceNumber - lastSequenceNumber == lastData.length){
-                        currentReceivedData.put(sequenceNumber,data);
+                    if (sequenceNumber - lastSequenceNumber == lastData.length) {
+                        currentReceivedData.put(sequenceNumber, data);
                     } else {
                         ackNumber = lastSequenceNumber + lastData.length;
                     }

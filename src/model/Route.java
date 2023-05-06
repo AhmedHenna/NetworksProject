@@ -1,6 +1,5 @@
 package model;
 
-import devices.Device;
 import devices.Router;
 
 public class Route {

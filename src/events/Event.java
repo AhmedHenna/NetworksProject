@@ -8,10 +8,9 @@ import java.util.ArrayList;
 
 public abstract class Event {
 
-    protected long timestampMillis;
-
     protected final Device source;
     protected final Device destination;
+    protected long timestampMillis;
     protected Packet packet;
 
     public Event(Device source, Device destination) {
@@ -47,11 +46,11 @@ public abstract class Event {
         this.packet = createPacket();
     }
 
-    public ArrayList<String> getAdditionalLogs(){
+    public ArrayList<String> getAdditionalLogs() {
         return new ArrayList<>();
     }
 
-    public void updateTimestamp(){
+    public void updateTimestamp() {
         this.timestampMillis = System.currentTimeMillis();
     }
 

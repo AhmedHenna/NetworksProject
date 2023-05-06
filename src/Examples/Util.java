@@ -8,6 +8,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class Util {
 
+    private static final ArrayList<String> usedMacs = new ArrayList<>();
+
     public static void listenForQueueUpdates(BlockingQueue<EventWithDirectSourceDestination> eventQueue) {
         while (true) {
             EventWithDirectSourceDestination peeked = eventQueue.peek();
@@ -24,8 +26,6 @@ public class Util {
             }
         }
     }
-
-    private static final ArrayList<String> usedMacs = new ArrayList<>();
 
     public static String randomMac() {
         Random random = new Random();

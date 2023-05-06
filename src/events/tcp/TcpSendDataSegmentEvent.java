@@ -25,8 +25,8 @@ public class TcpSendDataSegmentEvent extends TcpDataSegmentEvent {
     @Override
     public ArrayList<String> getAdditionalLogs() {
         ArrayList<String> additional = super.getAdditionalLogs();
-        additional.add(source.toLength("SEQ:"+ getSequenceNumber(), 7));
-        additional.add("DATA: "+source.toLength(new String(getData()),16));
+        additional.add(source.toLength("SEQ:" + getSequenceNumber(), 7));
+        additional.add("DATA: " + source.toLength(new String(getData()), 16));
         return additional;
     }
 }

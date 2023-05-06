@@ -5,7 +5,6 @@ import devices.Router;
 import devices.Switch;
 import devices.client.Client;
 import events.EventWithDirectSourceDestination;
-import events.arp.ArpRequestEvent;
 import events.arp.ArpResponseEvent;
 import events.tcp.TcpAckEvent;
 import events.tcp.TcpSendDataEvent;
@@ -100,7 +99,6 @@ public class Example3 {
         switchB.addLinkedDevice(clientB);
         switchC.addLinkedDevice(clientC);
         switchD.addLinkedDevice(clientD);
-
 
 
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientD, 56, 23);
