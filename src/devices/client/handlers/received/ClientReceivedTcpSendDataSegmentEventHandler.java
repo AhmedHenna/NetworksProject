@@ -28,44 +28,70 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
             currentReceivingState = new TcpCurrentReceivingState(currentConnection, new TreeMap<>());
             client.currentReceivingStates.add(currentReceivingState);
         }
+
+        if(randomIsSegmentDropped()){
+            client.log("Simulated segment dropped, not acknowledging");
+            return;
+        }
+
         if (currentReceivingState != null) {
             TreeMap<Integer, byte[]> currentReceivedData = currentReceivingState.getCurrentReceivedData();
             byte[] data = tcpPayload.getPayload();
+            int sequenceNumber = event.getSequenceNumber();
+            int ackNumber = sequenceNumber + data.length;
 
-            if (isValidChecksum(data, event.getChecksum())) {
-                currentReceivedData.put(event.getSequenceNumber(), data);
-            }
 
-            int ackNumber = currentReceivedData.lastKey() + currentReceivedData.lastEntry().getValue().length;
-            int expectedSeqNumber = 1;
-            int prevSequenceNumber = 1;
-            for (Map.Entry<Integer, byte[]> entry : currentReceivedData.entrySet()) {
-                int seqNum = entry.getKey();
-                if (seqNum != expectedSeqNumber) {
-                    ackNumber = prevSequenceNumber;
-                    break;
+            if (isRandomNotValidChecksum(data, event.getChecksum())) {
+                client.log("Invalid checksum detected");
+                if(currentReceivedData.isEmpty()){
+                    ackNumber = sequenceNumber;
+                } else {
+                    int lastSequenceNumber = currentReceivedData.lastKey();
+                    byte[] lastData = currentReceivedData.lastEntry().getValue();
+                    ackNumber = lastSequenceNumber + lastData.length;
                 }
-
-                prevSequenceNumber = seqNum;
-                expectedSeqNumber = seqNum + entry.getValue().length;
+            } else {
+                if(currentReceivedData.isEmpty()){
+                    if(ackNumber == Device.MSS + 1){
+                        currentReceivedData.put(sequenceNumber,data);
+                    } else {
+                        ackNumber = sequenceNumber;
+                    }
+                } else {
+                    int lastSequenceNumber = currentReceivedData.lastKey();
+                    byte[] lastData = currentReceivedData.lastEntry().getValue();
+                    if(sequenceNumber - lastSequenceNumber == lastData.length){
+                        currentReceivedData.put(sequenceNumber,data);
+                    } else {
+                        ackNumber = lastSequenceNumber + lastData.length;
+                    }
+                }
             }
+
 
             TcpAckDataSegmentEvent tcpAckDataSegmentEvent =
                     new TcpAckDataSegmentEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
-                                tcpPayload.getSourcePort(), ackNumber, "", randomWindowSize()
+                            tcpPayload.getSourcePort(), ackNumber, "", randomWindowSize()
                     );
 
             client.sendEvent(tcpAckDataSegmentEvent);
         }
     }
 
-    private boolean isValidChecksum(byte[] data, String checksum) {
-        return new String(data).equals(checksum);
+    private boolean isRandomNotValidChecksum(byte[] data, String checksum) {
+//        return new String(data).equals(checksum);
+        Random random = new Random();
+        return random.nextInt(15) == 1;
     }
 
-    private int randomWindowSize(){
+    private boolean randomIsSegmentDropped() {
         Random random = new Random();
-        return random.nextInt(5);
+        return random.nextInt(15) == 1;
+    }
+
+    private int randomWindowSize() {
+        Random random = new Random();
+        return random.nextInt(4) + 1;
     }
 
 }

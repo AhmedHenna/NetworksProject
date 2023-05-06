@@ -20,7 +20,7 @@ public abstract class Device extends Thread {
 
     //Number of event allowed at a given point
     public static int INITIAL_WINDOW_SIZE = 3;
-    public static int SENT_SEGMENT_TIMEOUT = 5000;
+    public static int SENT_SEGMENT_TIMEOUT = 15000;
     protected final Link networkLink;
     private final String macAddress;
     private final IpAddress ipAddress;

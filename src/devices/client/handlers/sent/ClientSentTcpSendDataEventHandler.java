@@ -24,7 +24,7 @@ public class ClientSentTcpSendDataEventHandler extends ClientEventHandler {
             byte[] data = event.getData();
             byte[][] segments = splitIntoSegments(data);
             Queue<TcpSendDataSegmentEvent> sendDataSegmentEvents = new LinkedList<>();
-            HashMap<Integer, TcpSendDataSegmentEvent> sentDataSegmentEvent = new HashMap<>();
+            TreeMap<Integer, TcpSendDataSegmentEvent> sentDataSegmentEvent = new TreeMap<>();
             int sequenceNumber = 1;
             for (byte[] segment : segments) {
                 TcpSendDataSegmentEvent sendDataSegmentEvent =

@@ -1,22 +1,25 @@
 package model;
 
+import devices.Device;
 import events.tcp.TcpSendDataSegmentEvent;
 
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class TcpCurrentSendingState {
     private final TcpConnection connection;
 
     private final Set<Integer> acknowledgedNumbers;
     private final Queue<TcpSendDataSegmentEvent> pendingSendDataEvents;
-    private final HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents;
+    private final TreeMap<Integer, TcpSendDataSegmentEvent> sentDataEvents;
 
     private final int lastAckNumber;
+    private int windowSizeAvailableForReSender = 0;
 
     public TcpCurrentSendingState(TcpConnection connection, Queue<TcpSendDataSegmentEvent> pendingSendDataEvents,
-                                  HashMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastAckNumber,
+                                  TreeMap<Integer, TcpSendDataSegmentEvent> sentDataEvents, int lastAckNumber,
                                   Set<Integer> acknowledgedNumbers
     ) {
         this.connection = connection;
@@ -34,7 +37,7 @@ public class TcpCurrentSendingState {
         return pendingSendDataEvents;
     }
 
-    public HashMap<Integer, TcpSendDataSegmentEvent> getSentDataEvents() {
+    public TreeMap<Integer, TcpSendDataSegmentEvent> getSentDataEvents() {
         return sentDataEvents;
     }
 
@@ -46,4 +49,11 @@ public class TcpCurrentSendingState {
         return lastAckNumber;
     }
 
+    public int getWindowSizeAvailableForReSender() {
+        return windowSizeAvailableForReSender;
+    }
+
+    public void setWindowSizeAvailableForReSender(int windowSizeAvailableForReSender) {
+        this.windowSizeAvailableForReSender = windowSizeAvailableForReSender;
+    }
 }

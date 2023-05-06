@@ -24,12 +24,14 @@ public class Client extends Device {
     public final ArrayList<IpAddressMacMapping> ipAddressMacMappings = new ArrayList<>();
     public final ArrayList<TcpCurrentSendingState> currentSendingStates = new ArrayList<>();
     public final ArrayList<TcpCurrentReceivingState> currentReceivingStates = new ArrayList<>();
+    public final ClientReSender reSender = new ClientReSender(this, currentSendingStates);
 
 
     public Client(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
                   Link networkLink, BlockingQueue<EventWithDirectSourceDestination> eventQueue
     ) {
         super(name, macAddress, ipAddress, subnetMask, defaultGateway, networkLink, eventQueue);
+        reSender.start();
     }
 
     public void sendEvent(Event event) {
