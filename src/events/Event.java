@@ -3,10 +3,12 @@ package events;
 import devices.Device;
 import model.packet.Packet;
 
+import java.util.ArrayList;
+
 
 public abstract class Event {
 
-    protected final long timestampMillis;
+    protected long timestampMillis;
 
     protected final Device source;
     protected final Device destination;
@@ -43,6 +45,14 @@ public abstract class Event {
 
     protected void recreatePacket() {
         this.packet = createPacket();
+    }
+
+    public ArrayList<String> getAdditionalLogs(){
+        return new ArrayList<>();
+    }
+
+    public void updateTimestamp(){
+        this.timestampMillis = System.currentTimeMillis();
     }
 
 }

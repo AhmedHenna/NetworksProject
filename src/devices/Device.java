@@ -19,7 +19,8 @@ public abstract class Device extends Thread {
     public static int MSS = 15;
 
     //Number of event allowed at a given point
-    public static int WINDOW_SIZE = 3;
+    public static int INITIAL_WINDOW_SIZE = 3;
+    public static int SENT_SEGMENT_TIMEOUT = 5000;
     protected final Link networkLink;
     private final String macAddress;
     private final IpAddress ipAddress;
@@ -89,31 +90,38 @@ public abstract class Device extends Thread {
         this.eventQueue.add(new EventWithDirectSourceDestination(event, this, destination));
     }
 
+
     public abstract void sendEvent(Event event);
 
-    protected void callOnReceivedListeners(Event event) {
+    protected void pauseBeforeSending(Event event){
         try {
-            //Sleep in case event is sent from listeners,
-            // makes sure it is received after any events sent through normal processing
-            sleep(100);
-            for (OnEvent onReceivedEvent : onReceivedEventListeners) {
-                onReceivedEvent.onEvent(event);
-            }
+            // Sleep to leave enough time between events to ensure proper ordering
+            sleep(50);
+            event.updateTimestamp();
+
         } catch (InterruptedException e) {
-            System.out.println("Interrupted while waiting to call received event listeners");
+            System.out.println("Interrupted while waiting to call sent event listeners");
+        }
+    }
+
+    protected void pauseBeforeReceiving(){
+        try {
+            // Sleep to leave enough time between events to ensure proper ordering
+            sleep(50);
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted while waiting to call sent event listeners");
+        }
+    }
+
+    protected void callOnReceivedListeners(Event event) {
+        for (OnEvent onReceivedEvent : onReceivedEventListeners) {
+            onReceivedEvent.onEvent(event);
         }
     }
 
     protected void callOnSentListeners(Event event) {
-        try {
-            //Sleep in case event is sent from listeners,
-            // makes sure it is received after any events sent through normal processing
-            sleep(100);
-            for (OnEvent onSentEvent : onSentEventListeners) {
-                onSentEvent.onEvent(event);
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted while waiting to call sent event listeners");
+        for (OnEvent onSentEvent : onSentEventListeners) {
+            onSentEvent.onEvent(event);
         }
     }
 
@@ -127,25 +135,25 @@ public abstract class Device extends Thread {
     }
 
     public void logSentEvent(Event event, Device destination) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(
-                dateFormat.format(new Date(event.getTimestampMillis())),
-                toLength("Sent", 8),
-                toLength(event.getClass().toString().replace("class events.", ""), 30),
-                toLength("To", 4),
-                toLength(destination.toString(), 10)
-        );
+        logEvent(event, destination, "Sent");
     }
 
     public void logReceivedEvent(Event event, Device source) {
+        logEvent(event, source, "Received");
+    }
+
+    private void logEvent(Event event, Device device, String type) {
+        boolean isReceivedEvent = type.toLowerCase().startsWith("r");
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-        log(
-                dateFormat.format(new Date(event.getTimestampMillis())),
-                toLength("Received", 8),
-                toLength(event.getClass().toString().replace("class events.", ""), 30),
-                toLength("From", 4),
-                toLength(source.toString(), 10)
-        );
+        ArrayList<String> logs = new ArrayList<>();
+        logs.add(dateFormat.format(isReceivedEvent ? new Date(System.currentTimeMillis()) : new Date(event.getTimestampMillis())));
+        logs.add(toLength(isReceivedEvent ? "Received" : "Sent", 8));
+        logs.add(toLength(event.getClass().toString().replace("class events.", ""), 30));
+        logs.add(toLength(isReceivedEvent ? "From" : "To", 4));
+        logs.add(toLength(device.toString(), 10));
+        logs.addAll(event.getAdditionalLogs());
+        String[] logsArray = logs.toArray(new String[0]);
+        log(logsArray);
     }
 
 
@@ -170,7 +178,7 @@ public abstract class Device extends Thread {
         return getName();
     }
 
-    private String toLength(String s, int l) {
+    public String toLength(String s, int l) {
         if (s.length() > l) {
             return s.substring(0, l - 1);
         } else if (s.length() < l) {

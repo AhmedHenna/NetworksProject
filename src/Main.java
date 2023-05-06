@@ -3,8 +3,6 @@ import devices.Router;
 import devices.Switch;
 import devices.client.Client;
 import events.EventWithDirectSourceDestination;
-import events.arp.ArpRequestEvent;
-import events.arp.ArpResponseEvent;
 import events.tcp.TcpAckEvent;
 import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;
@@ -64,8 +62,8 @@ public class Main {
 
         TcpSynEvent tcpSynEvent = new TcpSynEvent(clientA, clientB, 56, 23);
         TcpSendDataEvent sendDataEvent = new TcpSendDataEvent(clientA, clientB,
-                "This is data This is data This is data This is dataThis is data This is data This is data".getBytes(),
-                56, 23, Device.WINDOW_SIZE
+                "This is some data that I am sending through this very complicated network simulation that I made".getBytes(),
+                56, 23, Device.INITIAL_WINDOW_SIZE
         );
 
         clientA.addOnReceivedEventListener(event -> {
@@ -103,7 +101,7 @@ public class Main {
                 }
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 System.out.println("Interrupted queue listener");
                 break;

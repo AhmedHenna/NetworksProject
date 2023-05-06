@@ -1,5 +1,6 @@
 package devices.client.handlers.received;
 
+import devices.Device;
 import devices.client.Client;
 import devices.client.ClientEventHandler;
 import devices.client.ClientUtil;
@@ -32,8 +33,12 @@ public class ClientReceivedTcpAckDataSegmentEventHandler extends ClientEventHand
             acknowledgedNumbers.add(ackNumber);
 
             int resentEvents = 0;
+            client.log("Received new window size for", event.getSource().toString(),
+                    String.valueOf(event.getWindowSize())
+            );
             for (Map.Entry<Integer, TcpSendDataSegmentEvent> sentEvent : sentEvents.entrySet()) {
-                if (sentEvent.getKey() == ackNumber && resentEvents < event.getWindowSize()) {
+                if (sentEvent.getKey() == ackNumber && resentEvents < event.getWindowSize() && sentEvent.getValue()
+                        .getSentAt() + Device.SENT_SEGMENT_TIMEOUT > System.currentTimeMillis()) {
                     sentEvents.put(sentEvent.getValue().getSequenceNumber(), sentEvent.getValue());
                     client.sendEvent(sentEvent.getValue());
                     resentEvents++;

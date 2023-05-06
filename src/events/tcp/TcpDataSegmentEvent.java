@@ -29,6 +29,10 @@ abstract class TcpDataSegmentEvent extends TcpEvent {
         recreatePacket();
     }
 
+    public byte[] getData() {
+        return data;
+    }
+
     public int getSequenceNumber() {
         return sequenceNumber;
     }

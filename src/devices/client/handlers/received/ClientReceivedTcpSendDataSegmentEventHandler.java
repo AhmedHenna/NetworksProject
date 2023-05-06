@@ -12,6 +12,7 @@ import model.TcpCurrentReceivingState;
 import model.packet.transport.TcpPayload;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHandler {
@@ -51,14 +52,20 @@ public class ClientReceivedTcpSendDataSegmentEventHandler extends ClientEventHan
 
             TcpAckDataSegmentEvent tcpAckDataSegmentEvent =
                     new TcpAckDataSegmentEvent(client, event.getSource(), tcpPayload.getDestinationPort(),
-                            tcpPayload.getSourcePort(), ackNumber, "", Device.WINDOW_SIZE
+                                tcpPayload.getSourcePort(), ackNumber, "", randomWindowSize()
                     );
+
             client.sendEvent(tcpAckDataSegmentEvent);
         }
     }
 
-    public boolean isValidChecksum(byte[] data, String checksum) {
+    private boolean isValidChecksum(byte[] data, String checksum) {
         return new String(data).equals(checksum);
+    }
+
+    private int randomWindowSize(){
+        Random random = new Random();
+        return random.nextInt(5);
     }
 
 }

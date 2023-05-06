@@ -36,6 +36,7 @@ public class Switch extends Device {
 
     @Override
     public void processReceivedEvent(Device source, Event event) {
+        pauseBeforeReceiving();
         logReceivedEvent(event, source);
         for (OnEvent onReceivedEvent : onReceivedEventListeners) {
             onReceivedEvent.onEvent(event);
@@ -48,6 +49,7 @@ public class Switch extends Device {
     }
 
     private void sendSwitchEvent(Event event, Device eventSource) {
+        pauseBeforeSending(event);
         Device destination = event.getDestination();
         boolean isLinkedToDest = false;
 

@@ -33,6 +33,7 @@ public class Client extends Device {
     }
 
     public void sendEvent(Event event) {
+        pauseBeforeSending(event);
         Device source = event.getSource();
 
         if (!currentIsSource(source)) {
@@ -74,6 +75,7 @@ public class Client extends Device {
 
     @Override
     public void processReceivedEvent(Device source, Event event) {
+        pauseBeforeReceiving();
         logReceivedEvent(event, source);
         if (event instanceof ArpRequestEvent) {
             new ClientReceivedArpRequestEventHandler().processEvent(this, event);

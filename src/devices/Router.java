@@ -41,6 +41,7 @@ public class Router extends Device {
 
     @Override
     public void processReceivedEvent(Device source, Event event) {
+        pauseBeforeReceiving();
         logReceivedEvent(event, source);
         for (OnEvent onReceivedEvent : onReceivedEventListeners) {
             onReceivedEvent.onEvent(event);
@@ -50,6 +51,7 @@ public class Router extends Device {
 
     @Override
     public void sendEvent(Event event) {
+        pauseBeforeSending(event);
         Router toRouter = findRouterForDevice(event.getDestination());
         if (toRouter == this) {
             processSentEvent(networkLink.getLinkedDevice(), event);
