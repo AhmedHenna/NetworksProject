@@ -57,8 +57,9 @@ public class Router extends Device {
             processSentEvent(networkLink.getLinkedDevice(), event);
             sendEventToDevice(networkLink.getLinkedDevice(), event);
         } else if(toRouter != null) {
-            processSentEvent(toRouter, event);
-            sendEventToDevice(getNextHopForDestination(toRouter), event);
+            Router nextHop = getNextHopForDestination(toRouter);
+            processSentEvent(nextHop, event);
+            sendEventToDevice(nextHop, event);
         }
     }
 
