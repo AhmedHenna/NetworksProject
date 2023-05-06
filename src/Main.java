@@ -10,6 +10,7 @@ import events.tcp.TcpSendDataEvent;
 import events.tcp.TcpSynEvent;
 import model.IpAddress;
 import model.Link;
+import routing_strategy.BellmanFordRoutingStrategy;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,6 +40,9 @@ public class Main {
 
         routers.add(routerA);
         routers.add(routerB);
+
+        routerA.setRoutingStrategy(new BellmanFordRoutingStrategy());
+        routerB.setRoutingStrategy(new BellmanFordRoutingStrategy());
 
         routerA.addLinkedDevice(routerB, 0);
         routerB.addLinkedDevice(routerA, 0);

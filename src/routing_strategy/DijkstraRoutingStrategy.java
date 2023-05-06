@@ -5,7 +5,7 @@ import model.Link;
 
 import java.util.*;
 
-public class DijkstraRoutingStrategy implements RoutingStrategy {
+public class DijkstraRoutingStrategy extends RoutingStrategy {
     @Override
     public Router findBestNextHop(Router from, Router to) {
         Router[] result = dijkstraSearch(from, to);
@@ -21,7 +21,7 @@ public class DijkstraRoutingStrategy implements RoutingStrategy {
         visited.add(from);
 
         //fills all unvisited Routers
-        allRouters(from, unvisited);
+        fillWithAllRoutersFrom(from, unvisited);
 
         unvisited.remove(from);
 
@@ -63,17 +63,6 @@ public class DijkstraRoutingStrategy implements RoutingStrategy {
         }
 
         return makeArrayReverse(parents, to, correctPath);
-    }
-
-
-    private static void allRouters(Router r, Set<Router> routers) {
-        routers.add(r);
-        for (Link l : r.getLinkedDevices()) {
-            Router linkedRouter = (Router) l.getLinkedDevice();
-            if (!routers.contains(linkedRouter)) {
-                allRouters(linkedRouter, routers);
-            }
-        }
     }
 
     private Router[] makeArrayReverse(Map<Router, Router> parents, Router target, List<Router> correctPath) {

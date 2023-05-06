@@ -18,7 +18,7 @@ public class Router extends Device {
     private final ArrayList<Link> linkedDevices = new ArrayList<>();
     public final ArrayList<Router> allRouters;
 
-    private final RoutingStrategy routingStrategy = new DijkstraRoutingStrategy();
+    private RoutingStrategy routingStrategy = new DijkstraRoutingStrategy();
 
 
     public Router(String name, String macAddress, IpAddress ipAddress, IpAddress subnetMask, Device defaultGateway,
@@ -80,6 +80,10 @@ public class Router extends Device {
 
     public void addLinkedDevice(Device device, int roundTripTime) {
         this.linkedDevices.add(new Link(device, roundTripTime));
+    }
+
+    public void setRoutingStrategy(RoutingStrategy routingStrategy) {
+        this.routingStrategy = routingStrategy;
     }
 
     public void buildRoutes() {
